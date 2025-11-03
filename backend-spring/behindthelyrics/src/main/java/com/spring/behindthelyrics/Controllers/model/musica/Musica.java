@@ -1,54 +1,61 @@
 package com.spring.behindthelyrics.Controllers.model.musica;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.spring.behindthelyrics.Controllers.model.album.Album;
 import com.spring.behindthelyrics.Controllers.model.banda.Banda;
+import com.spring.behindthelyrics.Controllers.model.comentario.Comentario;
+import com.spring.behindthelyrics.Controllers.model.favorito.Favorito;
 
-import jakarta.persistence.Column;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Entity
 @NoArgsConstructor
+@Entity
 @Table(name = "musicas")
-
-public class Musica{
+public class Musica {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    private int ano_lancamento;
+    private String nome;
 
-    private String titulo;
+    private String lore;
 
-    @Column
-    private String loreMsc;
-
-    // Relacionamento com Banda
-    @ManyToOne
-    @JoinColumn(name = "banda_id")
-    private Banda banda;
-
-    // Relacionamento com Álbum
     @ManyToOne
     @JoinColumn(name = "album_id")
     private Album album;
 
+    @ManyToOne
+    @JoinColumn(name = "banda_id")
+    private Banda banda;
 
-    public Musica(int ano_lancamento, String titulo, String loreMsc, Banda banda, Album album) {
-        this.ano_lancamento = ano_lancamento;
-        this.titulo = titulo;
-        this.loreMsc = loreMsc;
-        this.banda = banda;
+    @OneToMany(mappedBy = "musica", cascade = CascadeType.ALL)
+    private List<Comentario> comentarios;
+
+    @OneToMany(mappedBy = "musica", cascade = CascadeType.ALL)
+    private List<Favorito> favoritos;
+
+
+    public Musica(String nome, String lore, Album album, Banda banda) {
+        this.nome = nome;
+        this.lore = lore;
         this.album = album;
-    }
+        this.banda = banda;
+        this.comentarios = new ArrayList<>();
+        this.favoritos = new ArrayList<>();
+}
 
 }

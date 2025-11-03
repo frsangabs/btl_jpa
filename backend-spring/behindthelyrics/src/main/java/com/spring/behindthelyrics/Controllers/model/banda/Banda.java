@@ -1,34 +1,65 @@
 package com.spring.behindthelyrics.Controllers.model.banda;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.spring.behindthelyrics.Controllers.model.album.Album;
+import com.spring.behindthelyrics.Controllers.model.comentario.Comentario;
+import com.spring.behindthelyrics.Controllers.model.favorito.Favorito;
+import com.spring.behindthelyrics.Controllers.model.musica.Musica;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
+
+
 @Data
 @NoArgsConstructor
-@Table(name = "banda")
+@Entity
+@Table(name = "bandas")
 public class Banda {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(nullable = false, unique = true)
     private String nome;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(nullable = true)
     private String lore;
 
-    // --- Construtor ---
+    @OneToMany(mappedBy = "banda", cascade = CascadeType.ALL)
+    private List<Album> albuns;
+
+    @OneToMany(mappedBy = "banda", cascade = CascadeType.ALL)
+    private List<Musica> musicas;
+
+    @OneToMany(mappedBy = "banda", cascade = CascadeType.ALL)
+    private List<Comentario> comentarios;
+
+    @OneToMany(mappedBy = "banda", cascade = CascadeType.ALL)
+    private List<Favorito> favoritos;
 
     public Banda(String nome, String lore) {
-        this.nome = nome;
-        this.lore = lore;
-    }
+    this.nome = nome;
+    this.lore = lore;
+    this.albuns = new ArrayList<>();
+    this.musicas = new ArrayList<>();
+    this.comentarios = new ArrayList<>();
+    this.favoritos = new ArrayList<>();
+}
+
+
+    
+
+
 }
