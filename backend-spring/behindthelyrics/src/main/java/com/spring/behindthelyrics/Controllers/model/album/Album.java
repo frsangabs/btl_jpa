@@ -39,11 +39,11 @@ public class Album {
 
     private int ano_lancamento;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "banda_id", nullable = false)
     private Banda banda;
 
-    @OneToMany(mappedBy = "album", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "album")
     private List<Musica> musicas;
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL)

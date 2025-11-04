@@ -34,11 +34,11 @@ public class Musica {
 
     private String lore;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "album_id")
     private Album album;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "banda_id")
     private Banda banda;
 
