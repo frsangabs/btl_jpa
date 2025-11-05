@@ -3,6 +3,7 @@ package com.spring.behindthelyrics.Controllers.model.musica;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -50,5 +51,9 @@ public class MusicaService {
     // 🔹 Check if a song exists by ID
     public boolean songExists(Long id) {
         return musicaRepository.existsById(id);
+    }
+
+    public List<Musica> getLastAddedSongs(int limit) {
+        return musicaRepository.findLastAddedSongs(PageRequest.of(0, limit));
     }
 }

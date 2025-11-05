@@ -1,8 +1,14 @@
 package com.spring.behindthelyrics.Controllers.model.favorito;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
+import com.spring.behindthelyrics.Controllers.model.album.Album;
+import com.spring.behindthelyrics.Controllers.model.banda.Banda;
+import com.spring.behindthelyrics.Controllers.model.musica.Musica;
 
 @Service
 public class FavoritoService {
@@ -44,5 +50,23 @@ public class FavoritoService {
             throw new RuntimeException("Favorito não encontrado.");
         }
         favoritoRepository.deleteById(id);
+    }
+
+    // 🔹 Banda mais favoritada
+    public Optional<Banda> getMostFavoritedBand() {
+        List<Banda> result = favoritoRepository.findTopFavoritedBand(PageRequest.of(0, 1));
+        return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
+    }
+
+    // 🔹 Álbum mais favoritado
+    public Optional<Album> getMostFavoritedAlbum() {
+        List<Album> result = favoritoRepository.findTopFavoritedAlbum(PageRequest.of(0, 1));
+        return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
+    }
+
+    // 🔹 Música mais favoritada
+    public Optional<Musica> getMostFavoritedMusic() {
+        List<Musica> result = favoritoRepository.findTopFavoritedMusic(PageRequest.of(0, 1));
+        return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
     }
 }

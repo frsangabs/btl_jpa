@@ -3,6 +3,7 @@ package com.spring.behindthelyrics.Controllers.model.musica;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -26,4 +27,7 @@ public interface MusicaRepository extends JpaRepository<Musica, Long> {
            "LEFT JOIN FETCH m.comentarios " +
            "WHERE m.id = :id")
     Optional<Musica> findByIdWithDetails(Long id);
+
+    @Query("SELECT m FROM Musica m ORDER BY m.id DESC")
+    List<Musica> findLastAddedSongs(Pageable pageable);
 }
