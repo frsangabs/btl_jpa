@@ -1,8 +1,12 @@
 package com.spring.behindthelyrics.Controllers.model.album;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.spring.behindthelyrics.Controllers.model.banda.Banda;
 import com.spring.behindthelyrics.Controllers.model.comentario.Comentario;
 import com.spring.behindthelyrics.Controllers.model.favorito.Favorito;
@@ -41,16 +45,18 @@ public class Album {
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "banda_id", nullable = false)
+    @JsonBackReference
     private Banda banda;
 
     @OneToMany(mappedBy = "album")
     private List<Musica> musicas;
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL)
-    private List<Comentario> comentarios;
+    @JsonManagedReference
+    private List<Comentario> comentarios = new ArrayList<>();
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL)
-    private List<Favorito> favoritos;
+    private Set<Favorito> favoritos;
 
     public Album(String nome, String lore, int ano_lancamento, Banda banda) {
     this.nome = nome;
@@ -59,7 +65,7 @@ public class Album {
     this.banda = banda;
     this.musicas = new ArrayList<>();
     this.comentarios = new ArrayList<>();
-    this.favoritos = new ArrayList<>();
+    this.favoritos = new HashSet<>();
 }
 
 }

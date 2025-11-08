@@ -2,8 +2,7 @@ package com.spring.behindthelyrics.Controllers.model.comentario;
 
 import java.time.LocalDateTime;
 
-import org.springframework.data.annotation.Id;
-
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.spring.behindthelyrics.Controllers.model.album.Album;
 import com.spring.behindthelyrics.Controllers.model.banda.Banda;
 import com.spring.behindthelyrics.Controllers.model.musica.Musica;
@@ -12,6 +11,7 @@ import com.spring.behindthelyrics.Controllers.model.user.Usuario;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -38,14 +38,17 @@ public class Comentario {
 
     @ManyToOne
     @JoinColumn(name = "banda_id")
+    @JsonBackReference
     private Banda banda;
 
     @ManyToOne
     @JoinColumn(name = "album_id")
+    @JsonBackReference
     private Album album;
 
     @ManyToOne
     @JoinColumn(name = "musica_id")
+    @JsonBackReference
     private Musica musica;
 
     public Comentario(String texto, Usuario usuario, Banda banda, Album album, Musica musica) {

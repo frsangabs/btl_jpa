@@ -50,4 +50,5 @@ public class AlbumService {
     public boolean albumExists(Long id) {
         return albumRepository.existsById(id);
     }
+
 }

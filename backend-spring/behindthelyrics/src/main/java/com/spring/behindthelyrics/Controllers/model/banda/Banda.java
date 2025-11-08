@@ -3,6 +3,7 @@ package com.spring.behindthelyrics.Controllers.model.banda;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.spring.behindthelyrics.Controllers.model.album.Album;
 import com.spring.behindthelyrics.Controllers.model.comentario.Comentario;
 import com.spring.behindthelyrics.Controllers.model.favorito.Favorito;
@@ -38,12 +39,14 @@ public class Banda {
     private String lore;
 
     @OneToMany(mappedBy = "banda", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Album> albuns;
 
     @OneToMany(mappedBy = "banda", cascade = CascadeType.ALL)
     private List<Musica> musicas;
 
     @OneToMany(mappedBy = "banda", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Comentario> comentarios;
 
     @OneToMany(mappedBy = "banda", cascade = CascadeType.ALL)

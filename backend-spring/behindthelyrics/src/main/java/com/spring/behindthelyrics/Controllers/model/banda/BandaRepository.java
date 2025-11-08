@@ -12,15 +12,13 @@ import org.springframework.stereotype.Repository;
 public interface BandaRepository extends JpaRepository<Banda, Long> {
 
     // 🔍 Busca parcial por nome (case insensitive)
-    List<Banda> findByNameContainingIgnoreCase(String nome);
+    List<Banda> findByNomeContainingIgnoreCase(String nome);
 
-    @Query("""
-        SELECT DISTINCT b FROM Banda b
-        LEFT JOIN FETCH b.albuns a
-        LEFT JOIN FETCH b.musicas m
-        LEFT JOIN FETCH b.comentarios c
-        WHERE b.id = :id
-    """)
+    @Query("SELECT b FROM Banda b " +
+       "LEFT JOIN FETCH b.albuns " +
+       "LEFT JOIN FETCH b.musicas " +
+       "LEFT JOIN FETCH b.comentarios " +
+       "WHERE b.id = :id")
     Optional<Banda> findByIdWithAllRelations(@Param("id") Long id);
 }
 

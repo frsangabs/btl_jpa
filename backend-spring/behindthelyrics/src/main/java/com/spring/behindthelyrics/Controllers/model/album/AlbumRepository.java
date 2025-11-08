@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -17,10 +18,13 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
     List<Album> findByBandaId(Long bandaId);
 
     // 🔗 Puxa um álbum com músicas, comentários e favoritos (JOIN FETCH)
-    @Query("SELECT a FROM Album a " +
-           "LEFT JOIN FETCH a.musicas " +
-           "LEFT JOIN FETCH a.comentarios " +
-           "LEFT JOIN FETCH a.favoritos " +
-           "WHERE a.id = :id")
-    Optional<Album> findByIdWithAllRelations(Long id);
+    @Query("""
+        SELECT DISTINCT a FROM Album a
+        LEFT JOIN a.musicas
+        LEFT JOIN a.comentarios
+        LEFT JOIN a.favoritos
+        WHERE a.id = :id
+    """)
+    Optional<Album> findByIdWithAllRelations(@Param("id") Long id);
+
 }

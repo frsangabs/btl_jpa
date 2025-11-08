@@ -6,10 +6,12 @@ import java.util.Optional;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class BandaService {
 
     private final BandaRepository bandaRepository;
+    
 
     public BandaService(BandaRepository bandaRepository) {
         this.bandaRepository = bandaRepository;
@@ -27,7 +29,7 @@ public class BandaService {
 
     // 🔹 Search bands by partial name (for dynamic filters)
     public List<Banda> searchBandsByName(String name) {
-        return bandaRepository.findByNameContainingIgnoreCase(name);
+        return bandaRepository.findByNomeContainingIgnoreCase(name);
     }
 
     public Banda saveBand(Banda banda) {
@@ -46,5 +48,6 @@ public class BandaService {
     public Optional<Banda> getBandWithAllDetails(Long id) {
         return bandaRepository.findByIdWithAllRelations(id);
     }
+
 
 }

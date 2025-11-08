@@ -55,4 +55,8 @@ public interface FavoritoRepository extends JpaRepository<Favorito, Long> {
         ORDER BY COUNT(f.musica) DESC
     """)
     java.util.List<Musica> findTopFavoritedMusic(Pageable pageable);
+
+    @Query("SELECT f.banda.id FROM Favorito f WHERE f.usuario.id = :usuarioId AND f.banda IS NOT NULL")
+    List<Long> findBandaIdsFavoritasByUsuario(Long usuarioId);
+
 }
