@@ -34,6 +34,7 @@ public class Comentario {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
+    @JsonBackReference(value = "usuario-comentarios")
     private Usuario usuario;
 
     @ManyToOne

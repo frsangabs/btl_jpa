@@ -42,6 +42,7 @@ public class Musica {
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "banda_id")
+    @JsonBackReference(value = "banda-musicas")
     private Banda banda;
 
     @OneToMany(mappedBy = "musica", cascade = CascadeType.ALL)

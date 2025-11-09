@@ -3,6 +3,7 @@ package com.spring.behindthelyrics.Controllers.model.user;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.spring.behindthelyrics.Controllers.model.comentario.Comentario;
 import com.spring.behindthelyrics.Controllers.model.favorito.Favorito;
 
@@ -37,6 +38,7 @@ public class Usuario {
     private String senha;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "usuario-comentarios")
     private List<Comentario> comentarios;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)

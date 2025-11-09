@@ -45,7 +45,7 @@ public class Album {
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "banda_id", nullable = false)
-    @JsonBackReference
+    @JsonBackReference(value = "banda-albuns")
     private Banda banda;
 
     @OneToMany(mappedBy = "album")

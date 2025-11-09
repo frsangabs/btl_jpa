@@ -39,10 +39,11 @@ public class Banda {
     private String lore;
 
     @OneToMany(mappedBy = "banda", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonManagedReference(value = "banda-albuns")
     private List<Album> albuns;
 
     @OneToMany(mappedBy = "banda", cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "banda-musicas")
     private List<Musica> musicas;
 
     @OneToMany(mappedBy = "banda", cascade = CascadeType.ALL)
