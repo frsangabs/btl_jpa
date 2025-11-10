@@ -3,6 +3,7 @@ package com.spring.behindthelyrics.Controllers.model.user;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -36,7 +37,7 @@ public class UsuarioService {
     }
 
     // 🔹 Get user by username
-    public Optional<Usuario> getUserByUsername(String username) {
+    public UserDetails getUserByUsername(String username) {
         return usuarioRepository.findByUsername(username);
     }
 
@@ -47,7 +48,7 @@ public class UsuarioService {
 
         user.setUsername(newData.getUsername());
         user.setEmail(newData.getEmail());
-        user.setSenha(newData.getSenha());
+        user.setPassword(newData.getPassword());
 
         return usuarioRepository.save(user);
     }
