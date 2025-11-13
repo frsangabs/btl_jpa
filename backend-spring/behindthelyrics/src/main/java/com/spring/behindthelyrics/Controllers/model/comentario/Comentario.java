@@ -39,17 +39,17 @@ public class Comentario {
 
     @ManyToOne
     @JoinColumn(name = "banda_id")
-    @JsonBackReference
+    @JsonBackReference(value = "banda-comentarios")
     private Banda banda;
 
     @ManyToOne
     @JoinColumn(name = "album_id")
-    @JsonBackReference
+    @JsonBackReference(value = "album-comentarios")
     private Album album;
 
     @ManyToOne
     @JoinColumn(name = "musica_id")
-    @JsonBackReference
+    @JsonBackReference(value = "musica-comentarios")
     private Musica musica;
 
     public Comentario(String texto, Usuario usuario, Banda banda, Album album, Musica musica) {

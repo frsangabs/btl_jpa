@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.spring.behindthelyrics.Controllers.model.album.Album;
 import com.spring.behindthelyrics.Controllers.model.banda.Banda;
 import com.spring.behindthelyrics.Controllers.model.comentario.Comentario;
@@ -37,7 +38,7 @@ public class Musica {
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "album_id")
-    @JsonBackReference
+    @JsonBackReference(value = "album-musicas")
     private Album album;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
@@ -46,6 +47,7 @@ public class Musica {
     private Banda banda;
 
     @OneToMany(mappedBy = "musica", cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "musica-comentarios")
     private List<Comentario> comentarios;
 
     @OneToMany(mappedBy = "musica", cascade = CascadeType.ALL)

@@ -49,10 +49,11 @@ public class Album {
     private Banda banda;
 
     @OneToMany(mappedBy = "album")
+    @JsonBackReference(value = "musicas-album")
     private List<Musica> musicas;
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonManagedReference(value = "album-comentarios")
     private List<Comentario> comentarios = new ArrayList<>();
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL)

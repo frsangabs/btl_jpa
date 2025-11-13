@@ -47,7 +47,7 @@ public class Banda {
     private List<Musica> musicas;
 
     @OneToMany(mappedBy = "banda", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonManagedReference(value = "banda-comentarios")
     private List<Comentario> comentarios;
 
     @OneToMany(mappedBy = "banda", cascade = CascadeType.ALL)
