@@ -30,7 +30,13 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorize -> authorize
                                     .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                                     .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+
                                     .requestMatchers(HttpMethod.POST, "/bands").hasAnyAuthority("ROLE_ADMIN")
+                                    .requestMatchers(HttpMethod.POST, "/albuns").hasAnyAuthority("ROLE_ADMIN")
+                                    .requestMatchers(HttpMethod.POST, "/musicas").hasAnyAuthority("ROLE_ADMIN")
+
+                                    .requestMatchers("/comments/**").authenticated()
+                                    
                                     .anyRequest().authenticated())
                                     .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                                     .build();

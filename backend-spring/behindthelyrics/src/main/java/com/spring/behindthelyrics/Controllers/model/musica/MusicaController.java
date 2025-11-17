@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.spring.behindthelyrics.Controllers.model.album.Album;
+import com.spring.behindthelyrics.Controllers.model.banda.Banda;
+
 @RestController
 @RequestMapping("/musicas")
 public class MusicaController {
@@ -39,6 +42,13 @@ public class MusicaController {
         String bandaNome,
         String albumNome,
         List<ComentarioDTO> comentarios
+    ) {}
+
+    public static record MusicaCreateDTO(
+    String nome,
+    String lore,
+    String bandaNome,
+    String albumNome
     ) {}
 
     // 🔹 GET: retorna todas as músicas (id, nome e nome da banda)
@@ -90,8 +100,18 @@ public class MusicaController {
 
     // 🔹 POST: cria uma nova música
     @PostMapping
-    public ResponseEntity<Musica> createMusica(@RequestBody Musica novaMusica) {
-        Musica salva = musicaService.saveSong(novaMusica);
+    public ResponseEntity<Musica> createMusica(@RequestBody MusicaCreateDTO dto) {
+
+        Banda banda = musicaService.findOrCreateBand(dto.bandaNome());
+        Album album = musicaService.findOrCreateAlbum(dto.albumNome(), banda);
+
+        Musica musica = new Musica();
+        musica.setNome(dto.nome());
+        musica.setLore(dto.lore());
+        musica.setBanda(banda);
+        musica.setAlbum(album);
+
+        Musica salva = musicaService.saveSong(musica);
         return ResponseEntity.ok(salva);
     }
 

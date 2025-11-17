@@ -6,13 +6,22 @@ import java.util.Optional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import com.spring.behindthelyrics.Controllers.model.album.Album;
+import com.spring.behindthelyrics.Controllers.model.album.AlbumRepository;
+import com.spring.behindthelyrics.Controllers.model.banda.Banda;
+import com.spring.behindthelyrics.Controllers.model.banda.BandaRepository;
+
 @Service
 public class MusicaService {
 
     private final MusicaRepository musicaRepository;
+    private final AlbumRepository albumRepository;
+    private final BandaRepository bandaRepository;
 
-    public MusicaService(MusicaRepository musicaRepository) {
+    public MusicaService(MusicaRepository musicaRepository, AlbumRepository albumRepository, BandaRepository bandaRepository) {
         this.musicaRepository = musicaRepository;
+        this.albumRepository = albumRepository;
+        this.bandaRepository = bandaRepository;
     }
 
     public List<Musica> getAllSongs() {
@@ -55,5 +64,36 @@ public class MusicaService {
 
     public List<Musica> getLastAddedSongs(int limit) {
         return musicaRepository.findLastAddedSongs(PageRequest.of(0, limit));
+    }
+
+    public Banda findOrCreateBand(String nome) {
+        List<Banda> bandas = bandaRepository.findByNomeContainingIgnoreCase(nome);
+
+        if (!bandas.isEmpty()) {
+            return bandas.get(0);
+        }
+
+        Banda b = new Banda();
+        b.setNome(nome);
+        return bandaRepository.save(b);
+    }
+
+
+    public Album findOrCreateAlbum(String nome, Banda banda) {
+
+        if (nome == null || nome.isBlank()) {
+            return null; // música sem álbum
+        }
+
+        List<Album> albuns = albumRepository.findByNomeContainingIgnoreCase(nome);
+
+        if (!albuns.isEmpty()) {
+            return albuns.get(0); // pega o primeiro encontrado
+        }
+
+        Album a = new Album();
+        a.setNome(nome);
+        a.setBanda(banda);
+        return albumRepository.save(a);
     }
 }
