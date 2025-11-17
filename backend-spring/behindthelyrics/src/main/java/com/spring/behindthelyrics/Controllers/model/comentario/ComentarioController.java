@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,27 +20,23 @@ import com.spring.behindthelyrics.Controllers.model.banda.BandaRepository;
 import com.spring.behindthelyrics.Controllers.model.musica.Musica;
 import com.spring.behindthelyrics.Controllers.model.musica.MusicaRepository;
 import com.spring.behindthelyrics.Controllers.model.user.Usuario;
-import com.spring.behindthelyrics.Controllers.model.user.UsuarioRepository;
 
 @RestController
 @RequestMapping("/comments")
 public class ComentarioController {
 
     private final ComentarioService comentarioService;
-    private final UsuarioRepository usuarioRepository;
     private final BandaRepository bandaRepository;
     private final AlbumRepository albumRepository;
     private final MusicaRepository musicaRepository;
 
     public ComentarioController(
         ComentarioService comentarioService,
-        UsuarioRepository usuarioRepository,
         BandaRepository bandaRepository,
         AlbumRepository albumRepository,
         MusicaRepository musicaRepository
     ) {
         this.comentarioService = comentarioService;
-        this.usuarioRepository = usuarioRepository;
         this.bandaRepository = bandaRepository;
         this.albumRepository = albumRepository;
         this.musicaRepository = musicaRepository;
@@ -55,30 +52,28 @@ public class ComentarioController {
 
     // DTO para criação
     public static record ComentarioCreateDTO(
-        Long usuarioId,
         String texto
     ) {}
 
-    // ----------------------------
+
+    // ---------------------------------------------------
     // CREATE COMMENT (BANDA)
-    // ----------------------------
+    // ---------------------------------------------------
     @PostMapping("/bands/{bandaId}")
     public ResponseEntity<?> createCommentForBand(
             @PathVariable Long bandaId,
+            @AuthenticationPrincipal Usuario usuarioLogado,
             @RequestBody ComentarioCreateDTO dto) {
 
-        Usuario usuario = usuarioRepository.findById(dto.usuarioId())
-                .orElse(null);
-        Banda banda = bandaRepository.findById(bandaId)
-                .orElse(null);
+        Banda banda = bandaRepository.findById(bandaId).orElse(null);
 
-        if (usuario == null || banda == null) {
-            return ResponseEntity.badRequest().body("Usuário ou Banda não existem");
+        if (banda == null) {
+            return ResponseEntity.badRequest().body("Banda não existe");
         }
 
         Comentario comment = new Comentario(
             dto.texto(),
-            usuario,
+            usuarioLogado,
             banda,
             null,
             null
@@ -87,26 +82,25 @@ public class ComentarioController {
         return ResponseEntity.ok(comentarioService.createComment(comment));
     }
 
-    // ----------------------------
-    // CREATE COMMENT (ALBUM)
-    // ----------------------------
+
+    // ---------------------------------------------------
+    // CREATE COMMENT (ÁLBUM)
+    // ---------------------------------------------------
     @PostMapping("/albuns/{albumId}")
     public ResponseEntity<?> createCommentForAlbum(
             @PathVariable Long albumId,
+            @AuthenticationPrincipal Usuario usuarioLogado,
             @RequestBody ComentarioCreateDTO dto) {
 
-        Usuario usuario = usuarioRepository.findById(dto.usuarioId())
-                .orElse(null);
-        Album album = albumRepository.findById(albumId)
-                .orElse(null);
+        Album album = albumRepository.findById(albumId).orElse(null);
 
-        if (usuario == null || album == null) {
-            return ResponseEntity.badRequest().body("Usuário ou Álbum não existem");
+        if (album == null) {
+            return ResponseEntity.badRequest().body("Álbum não existe");
         }
 
         Comentario comment = new Comentario(
             dto.texto(),
-            usuario,
+            usuarioLogado,
             null,
             album,
             null
@@ -115,26 +109,25 @@ public class ComentarioController {
         return ResponseEntity.ok(comentarioService.createComment(comment));
     }
 
-    // ----------------------------
+
+    // ---------------------------------------------------
     // CREATE COMMENT (MÚSICA)
-    // ----------------------------
+    // ---------------------------------------------------
     @PostMapping("/musicas/{musicaId}")
     public ResponseEntity<?> createCommentForMusic(
             @PathVariable Long musicaId,
+            @AuthenticationPrincipal Usuario usuarioLogado,
             @RequestBody ComentarioCreateDTO dto) {
 
-        Usuario usuario = usuarioRepository.findById(dto.usuarioId())
-                .orElse(null);
-        Musica musica = musicaRepository.findById(musicaId)
-                .orElse(null);
+        Musica musica = musicaRepository.findById(musicaId).orElse(null);
 
-        if (usuario == null || musica == null) {
-            return ResponseEntity.badRequest().body("Usuário ou Música não existem");
+        if (musica == null) {
+            return ResponseEntity.badRequest().body("Música não existe");
         }
 
         Comentario comment = new Comentario(
             dto.texto(),
-            usuario,
+            usuarioLogado,
             null,
             null,
             musica
@@ -143,9 +136,8 @@ public class ComentarioController {
         return ResponseEntity.ok(comentarioService.createComment(comment));
     }
 
-    // ----------------------------
+
     // GET COMMENTS (BANDA)
-    // ----------------------------
     @GetMapping("/bands/{bandaId}")
     public ResponseEntity<List<ComentarioDTO>> getCommentsForBand(@PathVariable Long bandaId) {
         return ResponseEntity.ok(
@@ -160,9 +152,7 @@ public class ComentarioController {
         );
     }
 
-    // ----------------------------
-    // GET COMMENTS (ALBUM)
-    // ----------------------------
+    // GET COMMENTS (ÁLBUM)
     @GetMapping("/albuns/{albumId}")
     public ResponseEntity<List<ComentarioDTO>> getCommentsForAlbum(@PathVariable Long albumId) {
         return ResponseEntity.ok(
@@ -177,9 +167,7 @@ public class ComentarioController {
         );
     }
 
-    // ----------------------------
     // GET COMMENTS (MÚSICA)
-    // ----------------------------
     @GetMapping("/musicas/{musicaId}")
     public ResponseEntity<List<ComentarioDTO>> getCommentsForMusic(@PathVariable Long musicaId) {
         return ResponseEntity.ok(
@@ -194,9 +182,7 @@ public class ComentarioController {
         );
     }
 
-    // ----------------------------
     // GET COMMENTS BY USER
-    // ----------------------------
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<ComentarioDTO>> getCommentsByUser(@PathVariable Long userId) {
         return ResponseEntity.ok(
@@ -211,12 +197,13 @@ public class ComentarioController {
         );
     }
 
-    // ----------------------------
     // DELETE COMMENT
-    // ----------------------------
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteComment(@PathVariable Long id) {
-        comentarioService.deleteComment(id);
+    public ResponseEntity<?> deleteComment(
+            @PathVariable Long id,
+            @AuthenticationPrincipal Usuario usuarioLogado) {
+
+        comentarioService.deleteComment(id, usuarioLogado);
         return ResponseEntity.noContent().build();
     }
 }

@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.spring.behindthelyrics.Controllers.model.user.Usuario;
+
 @Service
 public class ComentarioService {
 
@@ -38,11 +40,18 @@ public class ComentarioService {
         return comentarioRepository.findByUsuarioId(userId);
     }
 
-    // 🔹 Excluir comentário
-    public void deleteComment(Long id) {
-        if (!comentarioRepository.existsById(id)) {
-            throw new RuntimeException("Comentário não encontrado.");
+    public void deleteComment(Long id, Usuario usuarioAutenticado) {
+
+        Comentario comentario = comentarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Comentário não encontrado."));
+
+        boolean isAuthor = comentario.getUsuario().getId().equals(usuarioAutenticado.getId());
+        boolean isAdmin = usuarioAutenticado.getRole().getRole().equals("admin");
+
+        if (!isAuthor && !isAdmin) {
+            throw new RuntimeException("Você não tem permissão para deletar este comentário.");
         }
+
         comentarioRepository.deleteById(id);
     }
 }
