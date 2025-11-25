@@ -26,10 +26,24 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         return http
             .csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.configurationSource(request -> {
+                var corsConfig = new org.springframework.web.cors.CorsConfiguration();
+                corsConfig.setAllowedOrigins(java.util.List.of("http://localhost:3000"));
+                corsConfig.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+                corsConfig.setAllowedHeaders(java.util.List.of("*"));
+                corsConfig.setAllowCredentials(true);
+
+                var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", corsConfig);
+                return corsConfig;
+            }))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
                                     .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                                     .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+                                    .requestMatchers(HttpMethod.GET, "/bands/**").permitAll()
+                                    .requestMatchers(HttpMethod.GET, "/albuns/**").permitAll()
+                                    .requestMatchers(HttpMethod.GET, "/musicas/**").permitAll()
 
                                     .requestMatchers(HttpMethod.POST, "/bands").hasAnyAuthority("ROLE_ADMIN")
                                     .requestMatchers(HttpMethod.POST, "/albuns").hasAnyAuthority("ROLE_ADMIN")
