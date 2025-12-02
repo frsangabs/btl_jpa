@@ -85,4 +85,9 @@ public class Usuario implements UserDetails {
     public String getUsername() {
     return this.username;
 }
+
+public Usuario(Long id) {
+    this.id = id;
+}
+
 }

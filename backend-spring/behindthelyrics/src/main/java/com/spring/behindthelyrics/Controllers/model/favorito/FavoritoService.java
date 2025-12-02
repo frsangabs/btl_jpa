@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.spring.behindthelyrics.Controllers.model.album.Album;
 import com.spring.behindthelyrics.Controllers.model.banda.Banda;
 import com.spring.behindthelyrics.Controllers.model.musica.Musica;
+import com.spring.behindthelyrics.Controllers.model.user.Usuario;
 
 @Service
 public class FavoritoService {
@@ -69,4 +70,62 @@ public class FavoritoService {
         List<Musica> result = favoritoRepository.findTopFavoritedMusic(PageRequest.of(0, 1));
         return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
     }
+    
+    public boolean isBandaFavorita(Long usuarioId, Long bandaId) {
+    return favoritoRepository.existsByUsuarioIdAndBandaId(usuarioId, bandaId);
+    }
+
+    public void favoritarBanda(Long usuarioId, Long bandaId) {
+        if (!isBandaFavorita(usuarioId, bandaId)) {
+            Favorito f = new Favorito();
+            f.setUsuario(new Usuario(usuarioId));
+            f.setBanda(new Banda(bandaId));
+            favoritoRepository.save(f);
+        }
+    }
+
+    public void desfavoritarBanda(Long usuarioId, Long bandaId) {
+        favoritoRepository.deleteByUsuarioIdAndBandaId(usuarioId, bandaId);
+    }
+
+
+    // ====== ÁLBUM ======
+
+    public boolean isAlbumFavorito(Long usuarioId, Long albumId) {
+        return favoritoRepository.existsByUsuarioIdAndAlbumId(usuarioId, albumId);
+    }
+
+    public void favoritarAlbum(Long usuarioId, Long albumId) {
+        if (!isAlbumFavorito(usuarioId, albumId)) {
+            Favorito f = new Favorito();
+            f.setUsuario(new Usuario(usuarioId));
+            f.setAlbum(new Album(albumId));
+            favoritoRepository.save(f);
+        }
+    }
+
+    public void desfavoritarAlbum(Long usuarioId, Long albumId) {
+        favoritoRepository.deleteByUsuarioIdAndAlbumId(usuarioId, albumId);
+    }
+
+
+    // ====== MÚSICA ======
+
+    public boolean isMusicaFavorita(Long usuarioId, Long musicaId) {
+        return favoritoRepository.existsByUsuarioIdAndMusicaId(usuarioId, musicaId);
+    }
+
+    public void favoritarMusica(Long usuarioId, Long musicaId) {
+        if (!isMusicaFavorita(usuarioId, musicaId)) {
+            Favorito f = new Favorito();
+            f.setUsuario(new Usuario(usuarioId));
+            f.setMusica(new Musica(musicaId));
+            favoritoRepository.save(f);
+        }
+    }
+
+    public void desfavoritarMusica(Long usuarioId, Long musicaId) {
+        favoritoRepository.deleteByUsuarioIdAndMusicaId(usuarioId, musicaId);
+    }
+
 }

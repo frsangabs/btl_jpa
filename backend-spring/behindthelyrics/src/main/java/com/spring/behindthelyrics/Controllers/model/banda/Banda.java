@@ -62,6 +62,11 @@ public class Banda {
     this.favoritos = new ArrayList<>();
 }
 
+public Banda(Long id) {
+    this.id = id;
+}
+
+
 
     
 

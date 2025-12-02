@@ -29,7 +29,7 @@ public class MusicaController {
     }
 
     // DTO simples (para listagem)
-    public static record MusicaDTO(Long id, String nome, String bandaNome) {}
+    public static record MusicaDTO(Long id, String nome, Long bandaID, String bandaNome) {}
 
     // DTO para comentários
     public static record ComentarioDTO(String usuario, String texto, LocalDateTime data) {}
@@ -39,7 +39,9 @@ public class MusicaController {
         Long id,
         String nome,
         String lore,
+        Long bandaID,
         String bandaNome,
+        Long almbumID,
         String albumNome,
         List<ComentarioDTO> comentarios
     ) {}
@@ -58,6 +60,7 @@ public class MusicaController {
             .map(m -> new MusicaDTO(
                 m.getId(),
                 m.getNome(),
+                m.getBanda() != null ? m.getBanda().getId() : null,
                 m.getBanda() != null ? m.getBanda().getNome() : null
             ))
             .collect(Collectors.toList());
@@ -90,7 +93,9 @@ public class MusicaController {
             musica.getId(),
             musica.getNome(),
             musica.getLore(),
+            musica.getBanda() != null ? musica.getBanda().getId() : null,
             musica.getBanda() != null ? musica.getBanda().getNome() : null,
+            musica.getAlbum() != null ? musica.getAlbum().getId() : null,
             musica.getAlbum() != null ? musica.getAlbum().getNome() : null,
             comentariosDTO
         );

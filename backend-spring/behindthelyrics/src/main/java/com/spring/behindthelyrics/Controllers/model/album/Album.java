@@ -69,4 +69,9 @@ public class Album {
     this.favoritos = new HashSet<>();
 }
 
+public Album(Long id) {
+    this.id = id;
+}
+
+
 }

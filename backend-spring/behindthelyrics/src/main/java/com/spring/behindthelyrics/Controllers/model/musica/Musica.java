@@ -63,4 +63,9 @@ public class Musica {
         this.favoritos = new ArrayList<>();
 }
 
+public Musica(Long id) {
+    this.id = id;
+}
+
+
 }

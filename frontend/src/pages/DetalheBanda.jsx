@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import api from "../api";
 
@@ -30,7 +30,7 @@ export default function DetalheBanda() {
           <ul>
             {banda.albuns.map(a => (
               <li key={a.id}>
-                {a.nome} 
+                <Link to={`/albuns/${a.id}`}>{a.nome} </Link>
               </li>
             ))}
           </ul>
@@ -42,7 +42,9 @@ export default function DetalheBanda() {
           <h2>Músicas</h2>
           <ul>
             {banda.musicas.map(m => (
-              <li key={m.id}>{m.nome}</li>
+              <li key={m.id}>
+                <Link to={`/musicas/${m.id}`}> {m.nome} </Link>
+                </li>
             ))}
           </ul>
         </>
