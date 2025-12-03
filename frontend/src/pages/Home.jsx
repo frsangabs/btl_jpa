@@ -65,7 +65,7 @@ export default function Home() {
           <ul>
             {data.latestSongs.map(m => (
               <li key={m.id}>
-                <Link to={`/musicas/${m.id}`}>{m.nome}</Link> —{" "}
+                <Link to={`/musicas/${m.id}`}>{m.nome}</Link> {" "}
                 <i>{m.banda?.nome}</i>
               </li>
             ))}

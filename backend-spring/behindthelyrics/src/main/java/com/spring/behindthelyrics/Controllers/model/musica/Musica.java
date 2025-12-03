@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.spring.behindthelyrics.Controllers.model.album.Album;
 import com.spring.behindthelyrics.Controllers.model.banda.Banda;
@@ -51,6 +52,7 @@ public class Musica {
     private List<Comentario> comentarios;
 
     @OneToMany(mappedBy = "musica", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Favorito> favoritos;
 
 

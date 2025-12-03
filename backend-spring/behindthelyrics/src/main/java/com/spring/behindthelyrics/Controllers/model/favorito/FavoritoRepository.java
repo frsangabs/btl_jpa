@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Repository;
 import com.spring.behindthelyrics.Controllers.model.album.Album;
 import com.spring.behindthelyrics.Controllers.model.banda.Banda;
 import com.spring.behindthelyrics.Controllers.model.musica.Musica;
+
+import jakarta.transaction.Transactional;
 
 @Repository
 public interface FavoritoRepository extends JpaRepository<Favorito, Long> {
@@ -64,8 +67,16 @@ public interface FavoritoRepository extends JpaRepository<Favorito, Long> {
     boolean existsByUsuarioIdAndAlbumId(Long usuarioId, Long albumId);
     boolean existsByUsuarioIdAndMusicaId(Long usuarioId, Long musicaId);
 
+    @Modifying
+    @Transactional
     void deleteByUsuarioIdAndBandaId(Long usuarioId, Long bandaId);
+
+    @Modifying
+    @Transactional
     void deleteByUsuarioIdAndAlbumId(Long usuarioId, Long albumId);
+
+    @Modifying
+    @Transactional
     void deleteByUsuarioIdAndMusicaId(Long usuarioId, Long musicaId);
 
 

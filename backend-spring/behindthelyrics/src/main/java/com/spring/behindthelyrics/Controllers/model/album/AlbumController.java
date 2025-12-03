@@ -27,7 +27,7 @@ public class AlbumController {
     }
 
     // DTO simples (para listagem)
-    public static record AlbumDTO(Long id, String nome, String bandaNome) {}
+    public static record AlbumDTO(Long id, String nome, Long bandaId, String bandaNome) {}
     public static record MusicaResumoDTO(Long id, String nome) {}
     public static record ComentarioDTO(String usuario, String texto, LocalDateTime data) {}
 
@@ -37,6 +37,7 @@ public class AlbumController {
         String nome,
         String lore,
         int ano_lancamento,
+        Long bandaId,
         String bandaNome,
         List<MusicaResumoDTO> musicas,
         List<ComentarioDTO> comentarios
@@ -49,6 +50,7 @@ public class AlbumController {
                 .map(a -> new AlbumDTO(
                         a.getId(),
                         a.getNome(),
+                        a.getBanda() != null ? a.getBanda().getId() : null,
                         a.getBanda() != null ? a.getBanda().getNome() : null
                 ))
                 .collect(Collectors.toList());
@@ -82,6 +84,7 @@ public ResponseEntity<AlbumDetalhesDTO> getAlbumById(@PathVariable Long id) {
                 a.getNome(),
                 a.getLore(),
                 a.getAno_lancamento(),
+                a.getBanda() != null ? a.getBanda().getId() : null,
                 a.getBanda() != null ? a.getBanda().getNome() : null,
                 musicasResumo,
                 comentariosDTO

@@ -1,5 +1,6 @@
 package com.spring.behindthelyrics.Controllers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,11 +41,47 @@ public class MainController {
         // 🔹 10 últimas músicas adicionadas
         List<Musica> latestSongs = musicaService.getLastAddedSongs(10);
 
-        // 🔹 Monta o JSON de resposta
-        response.put("topBand", topBand);
-        response.put("topAlbum", topAlbum);
-        response.put("topMusic", topMusic);
-        response.put("latestSongs", latestSongs);
+        // 🔹 Monta o JSON de resposta — convertendo para mapas simples (DTO-like)
+        if (topBand != null) {
+            Map<String, Object> bandMap = new HashMap<>();
+            bandMap.put("id", topBand.getId());
+            bandMap.put("nome", topBand.getNome());
+            response.put("topBand", bandMap);
+        } else {
+            response.put("topBand", null);
+        }
+
+        if (topAlbum != null) {
+            Map<String, Object> albumMap = new HashMap<>();
+            albumMap.put("id", topAlbum.getId());
+            albumMap.put("nome", topAlbum.getNome());
+            albumMap.put("banda", topAlbum.getBanda() != null ? topAlbum.getBanda().getNome() : null);
+            response.put("topAlbum", albumMap);
+        } else {
+            response.put("topAlbum", null);
+        }
+
+        if (topMusic != null) {
+            Map<String, Object> musicMap = new HashMap<>();
+            musicMap.put("id", topMusic.getId());
+            musicMap.put("nome", topMusic.getNome());
+            musicMap.put("banda", topMusic.getBanda() != null ? topMusic.getBanda().getNome() : null);
+            response.put("topMusic", musicMap);
+        } else {
+            response.put("topMusic", null);
+        }
+
+        List<Map<String, Object>> latestSongMaps = new ArrayList<>();
+        if (latestSongs != null) {
+            for (Musica m : latestSongs) {
+                Map<String, Object> mMap = new HashMap<>();
+                mMap.put("id", m.getId());
+                mMap.put("nome", m.getNome());
+                mMap.put("banda", m.getBanda() != null ? m.getBanda().getNome() : null);
+                latestSongMaps.add(mMap);
+            }
+        }
+        response.put("latestSongs", latestSongMaps);
 
         return response;
     }

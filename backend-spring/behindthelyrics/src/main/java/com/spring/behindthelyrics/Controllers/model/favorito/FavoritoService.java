@@ -11,6 +11,8 @@ import com.spring.behindthelyrics.Controllers.model.banda.Banda;
 import com.spring.behindthelyrics.Controllers.model.musica.Musica;
 import com.spring.behindthelyrics.Controllers.model.user.Usuario;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class FavoritoService {
 
@@ -84,6 +86,8 @@ public class FavoritoService {
         }
     }
 
+
+    @Transactional
     public void desfavoritarBanda(Long usuarioId, Long bandaId) {
         favoritoRepository.deleteByUsuarioIdAndBandaId(usuarioId, bandaId);
     }
@@ -104,6 +108,7 @@ public class FavoritoService {
         }
     }
 
+    @Transactional
     public void desfavoritarAlbum(Long usuarioId, Long albumId) {
         favoritoRepository.deleteByUsuarioIdAndAlbumId(usuarioId, albumId);
     }
@@ -124,6 +129,7 @@ public class FavoritoService {
         }
     }
 
+    @Transactional
     public void desfavoritarMusica(Long usuarioId, Long musicaId) {
         favoritoRepository.deleteByUsuarioIdAndMusicaId(usuarioId, musicaId);
     }

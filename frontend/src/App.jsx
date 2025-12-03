@@ -6,11 +6,13 @@ import DetalheAlbum from "./pages/DetalheAlbum";
 import Musicas from "./pages/Musicas";
 import DetalheMusica from "./pages/DetalheMusica";
 import Home from "./pages/Home";
+import Login from "./pages/Login";
 
 export default function App() {
   return (
-    <BrowserRouter>
+    
       <Routes>
+        <Route path="/" element={<Home />} />
         <Route path="/bands" element={<Bandas />} />
         <Route path="/bands/:id" element={<DetalheBanda />} />
         <Route path="/albuns" element={<Albuns />} />
@@ -18,7 +20,8 @@ export default function App() {
         <Route path="/musicas" element={<Musicas />} />
         <Route path="/musicas/:id" element={<DetalheMusica />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
-    </BrowserRouter>
+    
   );
 }
