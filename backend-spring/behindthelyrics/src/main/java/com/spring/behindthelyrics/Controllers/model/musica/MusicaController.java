@@ -133,8 +133,21 @@ public class MusicaController {
 
         existente.setNome(dadosAtualizados.getNome());
         existente.setLore(dadosAtualizados.getLore());
-        existente.setAlbum(dadosAtualizados.getAlbum());
-        existente.setBanda(dadosAtualizados.getBanda());
+
+        // Ao atualizar, evita usar instâncias 'detached' vindas do JSON.
+        if (dadosAtualizados.getAlbum() != null && dadosAtualizados.getAlbum().getId() != null) {
+            var optAlbum = musicaService.getAlbumById(dadosAtualizados.getAlbum().getId());
+            existente.setAlbum(optAlbum.orElse(null));
+        } else {
+            existente.setAlbum(null);
+        }
+
+        if (dadosAtualizados.getBanda() != null && dadosAtualizados.getBanda().getId() != null) {
+            var optBanda = musicaService.getBandById(dadosAtualizados.getBanda().getId());
+            existente.setBanda(optBanda.orElse(null));
+        } else {
+            existente.setBanda(null);
+        }
 
         Musica atualizada = musicaService.saveSong(existente);
         return ResponseEntity.ok(atualizada);

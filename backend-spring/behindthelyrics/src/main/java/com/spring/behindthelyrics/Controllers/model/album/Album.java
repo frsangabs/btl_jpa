@@ -43,7 +43,7 @@ public class Album {
 
     private int ano_lancamento;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "banda_id", nullable = false)
     @JsonBackReference(value = "banda-albuns")
     private Banda banda;

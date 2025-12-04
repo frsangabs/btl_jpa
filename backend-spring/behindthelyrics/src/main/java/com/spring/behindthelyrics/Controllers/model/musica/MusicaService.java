@@ -78,6 +78,14 @@ public class MusicaService {
         return bandaRepository.save(b);
     }
 
+    public java.util.Optional<Banda> getBandById(Long id) {
+        return bandaRepository.findById(id);
+    }
+
+    public java.util.Optional<Album> getAlbumById(Long id) {
+        return albumRepository.findById(id);
+    }
+
 
     public Album findOrCreateAlbum(String nome, Banda banda) {
 

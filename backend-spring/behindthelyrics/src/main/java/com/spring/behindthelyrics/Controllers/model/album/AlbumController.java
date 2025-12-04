@@ -68,6 +68,21 @@ public class AlbumController {
         return ResponseEntity.ok(albuns);
     }
 
+        // 🔹 GET: retorna todos os álbuns de uma banda (id, nome e nome da banda)
+        @GetMapping("/banda/{bandaId}")
+        public ResponseEntity<List<AlbumDTO>> getAlbumsByBand(@PathVariable Long bandaId) {
+        List<AlbumDTO> albuns = albumService.getAlbumsByBand(bandaId).stream()
+            .map(a -> new AlbumDTO(
+                a.getId(),
+                a.getNome(),
+                a.getBanda() != null ? a.getBanda().getId() : null,
+                a.getBanda() != null ? a.getBanda().getNome() : null
+            ))
+            .collect(Collectors.toList());
+
+        return ResponseEntity.ok(albuns);
+        }
+
     // 🔹 GET: retorna detalhes de um álbum pelo ID
     @GetMapping("/{id}")
     public ResponseEntity<AlbumDetalhesDTO> getAlbumById(@PathVariable Long id) {

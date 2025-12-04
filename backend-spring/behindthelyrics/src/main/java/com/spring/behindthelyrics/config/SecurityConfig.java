@@ -49,9 +49,9 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.GET, "/musicas/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/home").permitAll()
 
-                    .requestMatchers(HttpMethod.POST, "/bands").hasAnyAuthority("ROLE_ADMIN")
-                    .requestMatchers(HttpMethod.POST, "/albuns").hasAnyAuthority("ROLE_ADMIN")
-                    .requestMatchers(HttpMethod.POST, "/musicas").hasAnyAuthority("ROLE_ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/bands/**").hasAnyAuthority("ROLE_ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/albuns/**").hasAnyAuthority("ROLE_ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/musicas/**").hasAnyAuthority("ROLE_ADMIN")
 
                     .requestMatchers(HttpMethod.POST, "/favoritos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                     .requestMatchers(HttpMethod.DELETE, "/favoritos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")

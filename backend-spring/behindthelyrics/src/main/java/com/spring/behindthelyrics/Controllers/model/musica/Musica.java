@@ -37,12 +37,12 @@ public class Musica {
 
     private String lore;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "album_id")
     @JsonBackReference(value = "album-musicas")
     private Album album;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "banda_id")
     @JsonBackReference(value = "banda-musicas")
     private Banda banda;
