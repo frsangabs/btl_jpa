@@ -49,6 +49,8 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.GET, "/musicas/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/home").permitAll()
 
+                    .requestMatchers(HttpMethod.GET, "/search/**").permitAll()
+
                     .requestMatchers(HttpMethod.POST, "/bands/**").hasAnyAuthority("ROLE_ADMIN")
                     .requestMatchers(HttpMethod.POST, "/albuns/**").hasAnyAuthority("ROLE_ADMIN")
                     .requestMatchers(HttpMethod.POST, "/musicas/**").hasAnyAuthority("ROLE_ADMIN")
