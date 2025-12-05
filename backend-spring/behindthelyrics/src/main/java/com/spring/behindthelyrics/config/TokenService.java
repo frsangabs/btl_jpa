@@ -16,8 +16,11 @@ import com.spring.behindthelyrics.Controllers.model.user.Usuario;
 @Service
 public class TokenService {
 
-    @Value("${api.security.token.secret}")
-    private String secret;
+    private final String secret;
+
+    public TokenService(@Value("${api.security.token.secret}") String secret) {
+        this.secret = secret;
+    }
 
     public String generateToken(Usuario user){
         try{
