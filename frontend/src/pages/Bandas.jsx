@@ -1,23 +1,40 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api";
+import useSpotifyImage from "../hooks/useSpotifyImage";
+import styles from "./Bandas.module.css";
+
+function BandaCard({ banda, isFav }) {
+  const image = useSpotifyImage("artist", banda.nome);
+
+  return (
+    <Link to={`/bands/${banda.id}`} className={styles.bandaCard}>
+      <span className={styles.favHeart}>{isFav ? "❤️" : "🤍"}</span>
+      <img
+        src={image || "/placeholder.jpg"}
+        alt={banda.nome}
+        className={styles.bandaImg}
+      />
+      <h3 className={styles.bandaTitle}>{banda.nome}</h3>
+    </Link>
+  );
+}
 
 export default function Bandas() {
   const [bandas, setBandas] = useState([]);
   const [favoritas, setFavoritas] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Estados do modal
   const [showModal, setShowModal] = useState(false);
   const [novaBandaNome, setNovaBandaNome] = useState("");
-  const [novaBandaLore, setNovaBandaLore] = useState(""); // campo opcional
+  const [novaBandaLore, setNovaBandaLore] = useState("");
 
   useEffect(() => {
     async function carregar() {
       try {
         const listaBandas = await api("http://localhost:8080/bands");
         const favs = await api("http://localhost:8080/favoritos");
-        const favBandas = favs.bandas?.map(b => b.id) || [];
+        const favBandas = favs.bandas?.map((b) => b.id) || [];
 
         setBandas(listaBandas);
         setFavoritas(favBandas);
@@ -30,20 +47,19 @@ export default function Bandas() {
     carregar();
   }, []);
 
-  // Criar nova banda usando fetch via api
   const criarBanda = async () => {
-    if (!novaBandaNome.trim()) return; // nome obrigatório
+    if (!novaBandaNome.trim()) return;
 
     try {
       const nova = await api("http://localhost:8080/bands", {
         method: "POST",
         body: JSON.stringify({
           nome: novaBandaNome,
-          lore: novaBandaLore || null, // lore opcional
+          lore: novaBandaLore || null,
         }),
       });
 
-      setBandas(prev => [...prev, nova]); // adiciona à lista
+      setBandas((prev) => [...prev, nova]);
       setNovaBandaNome("");
       setNovaBandaLore("");
       setShowModal(false);
@@ -55,70 +71,57 @@ export default function Bandas() {
   if (loading) return <p>Carregando...</p>;
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Bandas</h1>
+    <div className={styles.bandasContainer}>
 
-      {/* Botão para abrir modal */}
-      <button
-        onClick={() => setShowModal(true)}
-        style={{ marginBottom: 20, padding: "8px 16px", cursor: "pointer" }}
-      >
-        Adicionar Banda
-      </button>
+      {/* HEADER */}
+      <div className={styles.bandasHeader}>
+        <h1>Bandas</h1>
+        <button className={styles.btnAdd} onClick={() => setShowModal(true)}>
+          + Adicionar Banda
+        </button>
+      </div>
 
-      {/* Modal */}
+      {/* GRID */}
+      <div className={styles.bandasGrid}>
+        {bandas.map((b) => (
+          <BandaCard key={b.id} banda={b} isFav={favoritas.includes(b.id)} />
+        ))}
+      </div>
+
+      {/* MODAL */}
       {showModal && (
-        <div style={{
-          position: "fixed",
-          top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: "rgba(0,0,0,0.5)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center"
-        }}>
-          <div style={{
-            backgroundColor: "#fff",
-            padding: 20,
-            borderRadius: 8,
-            minWidth: 300
-          }}>
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalBox}>
             <h2>Nova Banda</h2>
 
             <input
-              type="text"
               value={novaBandaNome}
-              onChange={e => setNovaBandaNome(e.target.value)}
-              placeholder="Nome da banda (obrigatório)"
-              style={{ width: "100%", padding: 6, marginBottom: 10 }}
+              onChange={(e) => setNovaBandaNome(e.target.value)}
+              placeholder="Nome da banda"
+              className={styles.modalInput}
             />
 
             <textarea
               value={novaBandaLore}
-              onChange={e => setNovaBandaLore(e.target.value)}
+              onChange={(e) => setNovaBandaLore(e.target.value)}
               placeholder="Lore (opcional)"
-              rows={3}
-              style={{ width: "100%", padding: 6, marginBottom: 10 }}
+              className={styles.modalTextarea}
             />
 
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
-              <button onClick={criarBanda} style={{ padding: "6px 12px" }}>Salvar</button>
-              <button onClick={() => setShowModal(false)} style={{ padding: "6px 12px" }}>Cancelar</button>
+            <div className={styles.modalActions}>
+              <button className={styles.modalBtn} onClick={criarBanda}>
+                Salvar
+              </button>
+              <button
+                className={`${styles.modalBtn} ${styles.cancel}`}
+                onClick={() => setShowModal(false)}
+              >
+                Cancelar
+              </button>
             </div>
           </div>
         </div>
       )}
-
-      <ul style={{ marginTop: 20 }}>
-        {bandas.map(b => {
-          const isFav = favoritas.includes(b.id);
-          return (
-            <li key={b.id} style={{ marginBottom: 6 }}>
-              <Link to={`/bands/${b.id}`}>{b.nome}</Link>{" "}
-              <span style={{ fontSize: 20 }}>{isFav ? "❤️" : "🤍"}</span>
-            </li>
-          );
-        })}
-      </ul>
     </div>
   );
 }

@@ -1,0 +1,254 @@
+/* DetalheBanda.module.css */
+
+h2{
+    text-align: center;
+}
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+  padding: 32px 0;
+  color: var(--text-light);
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 26px;
+}
+
+.bandInfo {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+.bandImage {
+  width: 140px;
+  height: 140px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: #111;
+  flex-shrink: 0;
+  border: 1px solid var(--border-color);
+}
+
+.titleWrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bandName {
+  font-size: 1.8rem;
+  margin: 0;
+}
+
+.favoriteBtn {
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+/* ACTIONS (edit/delete) */
+.actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.editBtn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-light);
+  cursor: pointer;
+}
+
+.deleteBtn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  background: #b32b2b;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* DESCRIPTION */
+.descriptionSection {
+  margin-bottom: 22px;
+}
+
+.descriptionText {
+  background: var(--bg-card);
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  color: var(--text-light);
+}
+
+/* ALBUMS (swiper wrapper) */
+.albumsSection {
+  margin-bottom: 24px;
+}
+
+.albumCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--text-light);
+}
+
+.albumImg {
+  width: 100%;
+  height: 160px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid var(--border-color);
+}
+
+.albumName {
+  font-size: 0.95rem;
+  margin: 6px 0 0;
+}
+
+/* TRACKS LIST */
+.tracksSection {
+  margin-bottom: 22px;
+}
+
+.trackList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.trackItem {
+  background: var(--bg-card);
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.trackLink {
+  color: var(--text-light);
+  text-decoration: none;
+}
+
+.trackDuration {
+  opacity: 0.7;
+  font-size: 0.9rem;
+}
+
+/* COMMENTS */
+.commentsSection {
+  margin-bottom: 30px;
+}
+
+.commentsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.addCommentBtn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  background: var(--primary);
+  color: var(--text-light);
+  cursor: pointer;
+}
+
+.commentsList {
+  list-style: none;
+  padding: 0;
+  margin-top: 12px;
+}
+
+.commentItem {
+  background: var(--bg-card);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.commentMeta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  opacity: 0.9;
+}
+
+.commentText {
+  margin: 0;
+}
+
+/* MODAL */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+}
+
+.modalBox {
+  background: var(--bg-card);
+  padding: 18px;
+  border-radius: 12px;
+  width: 420px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+}
+
+.modalInput,
+.modalTextarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-dark);
+  color: var(--text-light);
+  margin-bottom: 12px;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modalBtn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  background: var(--primary);
+  color: var(--text-light);
+  cursor: pointer;
+}
+
+.cancelBtn {
+  background: #444;
+}
+
+/* Responsividade */
+@media (max-width: 700px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .titleWrap { align-items: center; }
+}

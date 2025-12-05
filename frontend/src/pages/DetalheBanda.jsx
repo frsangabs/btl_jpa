@@ -1,7 +1,17 @@
+// src/pages/DetalheBanda.jsx
+import React, { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import api from "../api";
 import { favoritar, desfavoritar } from "../services/favoritoApi";
+import useSpotifyImage from "../hooks/useSpotifyImage";
+import AlbumCard from "../components/AlbumCard";
+import styles from "./DetalheBanda.module.css";
+
+// Swiper imports
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 export default function DetalheBanda() {
   const { id } = useParams();
@@ -11,18 +21,20 @@ export default function DetalheBanda() {
   const [isFav, setIsFav] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Modal de edição
+  // Modais e campos
   const [showEditModal, setShowEditModal] = useState(false);
   const [editNome, setEditNome] = useState("");
   const [editLore, setEditLore] = useState("");
 
-  // Modal de comentário
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [novoComentario, setNovoComentario] = useState("");
+
+  const bandImg = useSpotifyImage("artist", banda?.nome);
 
   useEffect(() => {
     carregarDetalhes();
     verificarFavorito();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   async function carregarDetalhes() {
@@ -39,7 +51,7 @@ export default function DetalheBanda() {
   async function verificarFavorito() {
     try {
       const favs = await api("http://localhost:8080/favoritos");
-      const jaFav = favs.bandas?.some(b => b.id === Number(id));
+      const jaFav = favs.bandas?.some((b) => b.id === Number(id));
       setIsFav(!!jaFav);
     } catch (err) {
       console.error("Erro ao verificar favorito:", err);
@@ -60,7 +72,7 @@ export default function DetalheBanda() {
     }
   }
 
-  // ======= EDIÇÃO =======
+  // Edição
   const abrirModalEdicao = () => {
     setEditNome(banda.nome);
     setEditLore(banda.lore || "");
@@ -69,13 +81,11 @@ export default function DetalheBanda() {
 
   const salvarEdicao = async () => {
     if (!editNome.trim()) return;
-
     try {
       await api(`http://localhost:8080/bands/${id}`, {
         method: "PUT",
         body: JSON.stringify({ nome: editNome, lore: editLore || null }),
       });
-
       const atualizado = await api(`http://localhost:8080/bands/${id}`);
       setBanda(atualizado);
       setShowEditModal(false);
@@ -84,7 +94,6 @@ export default function DetalheBanda() {
     }
   };
 
-  // ======= DELETE =======
   const deletarBanda = async () => {
     if (!window.confirm("Deseja realmente excluir esta banda?")) return;
     try {
@@ -95,7 +104,7 @@ export default function DetalheBanda() {
     }
   };
 
-  // ======= COMENTÁRIO =======
+  // Comentários
   const abrirModalComentario = () => {
     setNovoComentario("");
     setShowCommentModal(true);
@@ -103,13 +112,11 @@ export default function DetalheBanda() {
 
   const salvarComentario = async () => {
     if (!novoComentario.trim()) return;
-
     try {
       await api(`http://localhost:8080/comments/bands/${id}`, {
         method: "POST",
         body: JSON.stringify({ texto: novoComentario }),
       });
-
       const atualizado = await api(`http://localhost:8080/bands/${id}`);
       setBanda(atualizado);
       setShowCommentModal(false);
@@ -122,84 +129,168 @@ export default function DetalheBanda() {
   if (!banda) return <p>Banda não encontrada.</p>;
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>{banda.nome}</h1>
-      <button
-        onClick={toggleFavorito}
-        style={{ background: "none", border: "none", cursor: "pointer", fontSize: 32, marginLeft: 10 }}
-      >
-        {isFav ? "❤️" : "🤍"}
-      </button>
+    <div className={styles.container}>
+      {/* top area: imagem + title + actions */}
+      <div className={styles.header}>
+        <div className={styles.bandInfo}>
+          <img
+            src={bandImg || "/placeholder-band.png"}
+            alt={banda.nome}
+            className={styles.bandImage}
+          />
+          <div className={styles.titleWrap}>
+            <h1 className={styles.bandName}>{banda.nome}</h1>
+            <button
+              className={styles.favoriteBtn}
+              onClick={toggleFavorito}
+              aria-label={isFav ? "Desfavoritar" : "Favoritar"}
+            >
+              {isFav ? "❤️" : "🤍"}
+            </button>
+          </div>
+        </div>
 
-      <p><strong>Descrição:</strong> {banda.lore}</p>
-
-      {/* Botões de ação */}
-      <div style={{ marginBottom: 20 }}>
-        <button onClick={abrirModalEdicao} style={{ marginRight: 10, padding: "6px 12px" }}>Editar Banda</button>
-        <button onClick={deletarBanda} style={{ padding: "6px 12px", background: "red", color: "#fff" }}>Deletar Banda</button>
-        <button onClick={abrirModalComentario} style={{ padding: "6px 12px", marginLeft: 10 }}>Adicionar Comentário</button>
+        <div className={styles.actions}>
+          <button className={styles.editBtn} onClick={abrirModalEdicao}>
+            Editar
+          </button>
+          <button className={styles.deleteBtn} onClick={deletarBanda}>
+            Deletar
+          </button>
+        </div>
       </div>
 
-      {/* Modal de edição */}
-      {showEditModal && (
-        <div style={{ position: "fixed", top:0,left:0,right:0,bottom:0, backgroundColor:"rgba(0,0,0,0.5)", display:"flex", alignItems:"center", justifyContent:"center" }}>
-          <div style={{ backgroundColor:"#fff", padding:20, borderRadius:8, minWidth:300 }}>
-            <h2>Editar Banda</h2>
-            <input type="text" value={editNome} onChange={e => setEditNome(e.target.value)} placeholder="Nome da banda" style={{ width:"100%", padding:6, marginBottom:10 }}/>
-            <textarea value={editLore} onChange={e => setEditLore(e.target.value)} placeholder="Lore (opcional)" rows={3} style={{ width:"100%", padding:6, marginBottom:10 }}/>
-            <div style={{ display:"flex", justifyContent:"flex-end", gap:10 }}>
-              <button onClick={salvarEdicao} style={{ padding:"6px 12px" }}>Salvar</button>
-              <button onClick={() => setShowEditModal(false)} style={{ padding:"6px 12px" }}>Cancelar</button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* descrição dinâmica */}
+      <section className={styles.descriptionSection}>
+        <h2>Descrição</h2>
+        <p className={styles.descriptionText}>
+          {banda.lore || "Sem descrição disponível."}
+        </p>
+      </section>
 
-      {/* Modal de comentário */}
-      {showCommentModal && (
-        <div style={{ position: "fixed", top:0,left:0,right:0,bottom:0, backgroundColor:"rgba(0,0,0,0.5)", display:"flex", alignItems:"center", justifyContent:"center" }}>
-          <div style={{ backgroundColor:"#fff", padding:20, borderRadius:8, minWidth:300 }}>
-            <h2>Novo Comentário</h2>
-            <textarea value={novoComentario} onChange={e => setNovoComentario(e.target.value)} placeholder="Escreva seu comentário..." rows={3} style={{ width:"100%", padding:6, marginBottom:10 }}/>
-            <div style={{ display:"flex", justifyContent:"flex-end", gap:10 }}>
-              <button onClick={salvarComentario} style={{ padding:"6px 12px" }}>Enviar</button>
-              <button onClick={() => setShowCommentModal(false)} style={{ padding:"6px 12px" }}>Cancelar</button>
-            </div>
-          </div>
-        </div>
-      )}
-
+      {/* carrossel de álbuns */}
       {banda.albuns?.length > 0 && (
-        <>
+        <section className={styles.albumsSection}>
           <h2>Álbuns</h2>
-          <ul>
-            {banda.albuns.map(a => (
-              <li key={a.id}><Link to={`/albuns/${a.id}`}>{a.nome}</Link></li>
+          <Swiper
+            navigation
+            pagination={{ clickable: true }}
+            spaceBetween={16}
+            slidesPerView={3}
+            breakpoints={{
+              320: { slidesPerView: 1.2 },
+              640: { slidesPerView: 2 },
+              900: { slidesPerView: 3 },
+            }}
+          >
+
+            {banda.albuns.map((a) => (
+              <SwiperSlide key={a.id}>
+                <AlbumCard album={a} />
+              </SwiperSlide>
             ))}
-          </ul>
-        </>
+          </Swiper>
+        </section>
       )}
 
+      {/* lista de músicas (vertical) */}
       {banda.musicas?.length > 0 && (
-        <>
+        <section className={styles.tracksSection}>
           <h2>Músicas</h2>
-          <ul>
-            {banda.musicas.map(m => (
-              <li key={m.id}><Link to={`/musicas/${m.id}`}>{m.nome}</Link></li>
+          <ul className={styles.trackList}>
+            {banda.musicas.map((m) => (
+              <li key={m.id} className={styles.trackItem}>
+                <Link to={`/musicas/${m.id}`} className={styles.trackLink}>
+                  {m.nome}
+                </Link>
+                <span className={styles.trackDuration}>{/* opcional */}</span>
+              </li>
             ))}
           </ul>
-        </>
+        </section>
       )}
 
-      {banda.comentarios?.length > 0 && (
-        <>
+      {/* comentários */}
+      <section className={styles.commentsSection}>
+        <div className={styles.commentsHeader}>
           <h2>Comentários</h2>
-          <ul>
+          <button className={styles.addCommentBtn} onClick={abrirModalComentario}>
+            + Comentar
+          </button>
+        </div>
+
+        {banda.comentarios?.length > 0 ? (
+          <ul className={styles.commentsList}>
             {banda.comentarios.map((c, idx) => (
-              <li key={idx}><strong>{c.usuario}:</strong> {c.texto} <em>({new Date(c.data).toLocaleString()})</em></li>
+              <li key={idx} className={styles.commentItem}>
+                <div className={styles.commentMeta}>
+                  <strong>{c.usuario || "Anônimo"}</strong>
+                  <span className={styles.commentDate}>
+                    {new Date(c.data).toLocaleString()}
+                  </span>
+                </div>
+                <p className={styles.commentText}>{c.texto}</p>
+              </li>
             ))}
           </ul>
-        </>
+        ) : (
+          <p className={styles.noComments}>Seja o primeiro a comentar.</p>
+        )}
+      </section>
+
+      {/* Edit modal */}
+      {showEditModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalBox}>
+            <h3>Editar Banda</h3>
+            <input
+              className={styles.modalInput}
+              value={editNome}
+              onChange={(e) => setEditNome(e.target.value)}
+            />
+            <textarea
+              className={styles.modalTextarea}
+              value={editLore}
+              onChange={(e) => setEditLore(e.target.value)}
+            />
+            <div className={styles.modalActions}>
+              <button className={styles.modalBtn} onClick={salvarEdicao}>
+                Salvar
+              </button>
+              <button
+                className={`${styles.modalBtn} ${styles.cancelBtn}`}
+                onClick={() => setShowEditModal(false)}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Comment modal */}
+      {showCommentModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalBox}>
+            <h3>Novo Comentário</h3>
+            <textarea
+              className={styles.modalTextarea}
+              value={novoComentario}
+              onChange={(e) => setNovoComentario(e.target.value)}
+            />
+            <div className={styles.modalActions}>
+              <button className={styles.modalBtn} onClick={salvarComentario}>
+                Enviar
+              </button>
+              <button
+                className={`${styles.modalBtn} ${styles.cancelBtn}`}
+                onClick={() => setShowCommentModal(false)}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

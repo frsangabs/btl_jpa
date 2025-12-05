@@ -46,7 +46,7 @@
 
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 0 18px rgba(138, 43, 226, 0.25);
+  box-shadow: 0 0 18px #1db954;
 }
 
 /* imagem futura do spotify */
