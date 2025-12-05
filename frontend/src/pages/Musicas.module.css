@@ -1,0 +1,214 @@
+.container {
+  width: 90%;
+  max-width: 1100px;
+  margin: auto;
+  padding: 28px 0;
+  color: var(--text-light, #fff);
+}
+
+.loading {
+  text-align: center;
+  color: var(--text-light, #fff);
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 2.2rem;
+  letter-spacing: 0.8px;
+}
+
+.addButton {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  background: #1db954;
+  color: #000;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: 0.2s;
+}
+
+.addButton:hover {
+  background: #1ed760;
+}
+
+/* LISTA */
+.lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.faixaItem {
+  background: var(--bg-card, #282828);
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #1db95422;
+  transition: background 0.2s;
+}
+
+.faixaItem:hover {
+  background: rgba(29, 185, 84, 0.08);
+}
+
+.faixaContent {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.musicaLink {
+  color: var(--text-light, #fff);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.05rem;
+  transition: color 0.2s;
+}
+
+.musicaLink:hover {
+  color: #1db954;
+}
+
+.bandaLink {
+  color: #1db954;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: opacity 0.2s;
+}
+
+.bandaLink:hover {
+  opacity: 0.8;
+}
+
+.separador {
+  color: #bdbdbd;
+  font-size: 1.1rem;
+}
+
+.favorito {
+  font-size: 1.2rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* MODAL */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+}
+
+.modalBox {
+  background: var(--bg-card, #282828);
+  padding: 18px;
+  border-radius: 12px;
+  width: 420px;
+  max-width: 90%;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+}
+
+.modalTitulo {
+  text-align: center;
+  color: var(--primary, #1db954);
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.modalInput,
+.modalTextarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #535353);
+  background: var(--bg-dark, #121212);
+  color: var(--text-light, #fff);
+  margin-bottom: 12px;
+}
+
+.modalTextarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.modalBtn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.salvar {
+  background: var(--primary, #1db954);
+  color: #000;
+}
+
+.salvar:hover {
+  background: #1ed760;
+}
+
+.cancelBtn {
+  background: #444;
+  color: #fff;
+}
+
+.cancelBtn:hover {
+  background: #555;
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .titulo {
+    font-size: 1.8rem;
+  }
+
+  .addButton {
+    width: 100%;
+  }
+
+  .faixaContent {
+    flex-wrap: wrap;
+  }
+
+  .musicaLink {
+    width: 100%;
+    margin-bottom: 4px;
+  }
+
+  .bandaLink,
+  .separador {
+    font-size: 0.9rem;
+  }
+}

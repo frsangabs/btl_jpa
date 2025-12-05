@@ -2,6 +2,8 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import api from "../api";
 import { favoritar, desfavoritar } from "../services/favoritoApi";
+import useSpotifyImage from "../hooks/useSpotifyImage";
+import styles from "./DetalheAlbum.module.css";
 
 export default function DetalheAlbum() {
   const { id } = useParams();
@@ -13,49 +15,48 @@ export default function DetalheAlbum() {
 
   const [bandas, setBandas] = useState([]);
 
-  // ==== EDIÇÃO ====
+  // EDIÇÃO
   const [showEditModal, setShowEditModal] = useState(false);
   const [editNome, setEditNome] = useState("");
   const [editLore, setEditLore] = useState("");
   const [editAno, setEditAno] = useState("");
   const [editBandaId, setEditBandaId] = useState("");
 
-  // ==== COMENTÁRIO ====
+  // COMENTÁRIO
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [novoComentario, setNovoComentario] = useState("");
 
-  // ==========================
-  // CARREGAR BANDAS
-  // ==========================
+  // CAPA DO ALBUM (Spotify)
+  const albumImg = useSpotifyImage("album", album?.nome);
+
   useEffect(() => {
     api("http://localhost:8080/bands")
       .then(setBandas)
-      .catch(err => console.error("Erro ao carregar bandas:", err));
+      .catch((err) => console.error("Erro ao carregar bandas:", err));
   }, []);
 
-  // ==========================
-  // CARREGAR ALBUM
-  // ==========================
   useEffect(() => {
+    setLoading(true);
     api(`http://localhost:8080/albuns/${id}`)
-      .then(data => {
+      .then((data) => {
         setAlbum(data);
         setLoading(false);
       })
-      .catch(err => console.error("Erro:", err));
+      .catch((err) => {
+        console.error("Erro:", err);
+        setLoading(false);
+      });
   }, [id]);
 
-  // ==========================
-  // VERIFICAR FAVORITO
-  // ==========================
   useEffect(() => {
     verificarFavorito();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   async function verificarFavorito() {
     try {
       const favs = await api("http://localhost:8080/favoritos");
-      const jaFav = favs.albuns?.some(a => a.id === Number(id));
+      const jaFav = favs.albuns?.some((a) => a.id === Number(id));
       setIsFav(!!jaFav);
     } catch (err) {
       console.error("Erro verificar favorito:", err);
@@ -76,20 +77,17 @@ export default function DetalheAlbum() {
     }
   }
 
-  // ==========================
   // EDIÇÃO
-  // ==========================
   const abrirModalEdicao = () => {
     setEditNome(album.nome);
     setEditLore(album.lore || "");
-    setEditAno(album.ano_lancamento);
-    setEditBandaId(album.bandaId);
+    setEditAno(album.ano_lancamento || "");
+    setEditBandaId(album.bandaId || "");
     setShowEditModal(true);
   };
 
   const salvarEdicao = async () => {
     if (!editNome.trim()) return;
-
     try {
       await api(`http://localhost:8080/albuns/${id}`, {
         method: "PUT",
@@ -104,33 +102,23 @@ export default function DetalheAlbum() {
       const atualizado = await api(`http://localhost:8080/albuns/${id}`);
       setAlbum(atualizado);
       setShowEditModal(false);
-
     } catch (err) {
       console.error("Erro ao atualizar álbum:", err);
     }
   };
 
-  // ==========================
   // DELETE
-  // ==========================
   const deletarAlbum = async () => {
     if (!window.confirm("Deseja realmente excluir este álbum?")) return;
-
     try {
-      await api(`http://localhost:8080/albuns/${id}`, {
-        method: "DELETE",
-      });
-
+      await api(`http://localhost:8080/albuns/${id}`, { method: "DELETE" });
       navigate("/albuns");
-
     } catch (err) {
       console.error("Erro ao deletar álbum:", err);
     }
   };
 
-  // ==========================
   // COMENTÁRIO
-  // ==========================
   const abrirModalComentario = () => {
     setNovoComentario("");
     setShowCommentModal(true);
@@ -138,7 +126,6 @@ export default function DetalheAlbum() {
 
   const salvarComentario = async () => {
     if (!novoComentario.trim()) return;
-
     try {
       await api(`http://localhost:8080/comments/albuns/${id}`, {
         method: "POST",
@@ -148,194 +135,183 @@ export default function DetalheAlbum() {
       const atualizado = await api(`http://localhost:8080/albuns/${id}`);
       setAlbum(atualizado);
       setShowCommentModal(false);
-
     } catch (err) {
       console.error("Erro ao salvar comentário:", err);
     }
   };
 
-  // ==========================
-  // RENDER
-  // ==========================
-  if (loading) return <p>Carregando...</p>;
-  if (!album) return <p>Álbum não encontrado.</p>;
+  if (loading) return <p className={styles.loading}>Carregando...</p>;
+  if (!album) return <p className={styles.loading}>Álbum não encontrado.</p>;
 
   return (
-    <div>
-      <h1>{album.nome}</h1>
+    <div className={styles.container}>
+      {/* TOP: imagem + título + favoritos + ações */}
+      <div className={styles.top}>
+        <img
+          src={albumImg || "/placeholder-album.png"}
+          alt={album.nome}
+          className={styles.albumCover}
+        />
 
-      {/* FAVORITO */}
-      <button
-        onClick={toggleFavorito}
-        style={{
-          background: "none",
-          border: "none",
-          cursor: "pointer",
-          fontSize: 32,
-          marginLeft: 10
-        }}
-      >
-        {isFav ? "❤️" : "🤍"}
-      </button>
+        <div className={styles.titleBlock}>
+          <h1 className={styles.title}>{album.nome}</h1>
 
-      {/* AÇÕES */}
-      <div style={{ marginTop: 20, marginBottom: 20 }}>
-        <button onClick={abrirModalEdicao} style={{ marginRight: 10 }}>
-          Editar Álbum
-        </button>
+          <div className={styles.metaRow}>
+            <Link to={`/bands/${album.bandaId}`} className={styles.bandLink}>
+              {album.bandaNome}
+            </Link>
+            <span className={styles.year}>{album.ano_lancamento || "—"}</span>
+          </div>
 
-        <button
-          onClick={deletarAlbum}
-          style={{ background: "red", color: "white", marginRight: 10 }}
-        >
-          Deletar Álbum
-        </button>
+          <div className={styles.actionsRow}>
+            <button
+              className={styles.favoriteBtn}
+              onClick={toggleFavorito}
+              aria-label={isFav ? "Desfavoritar" : "Favoritar"}
+            >
+              {isFav ? "❤️" : "🤍"}
+            </button>
 
-        <button onClick={abrirModalComentario}>
-          Adicionar Comentário
-        </button>
+            <button className={styles.editBtn} onClick={abrirModalEdicao}>
+              Editar
+            </button>
+
+            <button className={styles.deleteBtn} onClick={deletarAlbum}>
+              Deletar
+            </button>
+
+          </div>
+        </div>
       </div>
 
-      <p>
-        <strong>Banda:</strong>{" "}
-        <Link to={`/bands/${album.bandaId}`}>{album.bandaNome}</Link>
-      </p>
+      {/* DESCRIÇÃO */}
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>Descrição</h2>
+        <div className={styles.cardBox}>
+          <p className={styles.descriptionText}>
+            {album.lore || "Sem descrição disponível."}
+          </p>
+        </div>
+      </section>
 
-      <p><strong>Ano de lançamento:</strong> {album.ano_lancamento}</p>
-      <p><strong>Descrição:</strong> {album.lore}</p>
-
+      {/* MÚSICAS */}
       {album.musicas?.length > 0 && (
-        <>
-          <h2>Músicas</h2>
-          <ul>
-            {album.musicas.map(m => (
-              <li key={m.id}>
-                <Link to={`/musicas/${m.id}`}>{m.nome}</Link>
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Músicas</h2>
+          <ul className={styles.trackList}>
+            {album.musicas.map((m) => (
+              <li key={m.id} className={styles.trackItem}>
+                <Link to={`/musicas/${m.id}`} className={styles.trackLink}>
+                  {m.nome}
+                </Link>
               </li>
             ))}
           </ul>
-        </>
+        </section>
       )}
 
-      {album.comentarios?.length > 0 && (
-        <>
-          <h2>Comentários</h2>
-          <ul>
+      {/* COMENTÁRIOS */}
+      <section className={styles.section}>
+        <div className={styles.sectionHeader}>
+          <h2 className={styles.sectionTitle}>Comentários</h2>
+          <button className={styles.addCommentBtn} onClick={abrirModalComentario}>
+            + Comentar
+          </button>
+        </div>
+
+        {album.comentarios?.length > 0 ? (
+          <ul className={styles.commentsList}>
             {album.comentarios.map((c, i) => (
-              <li key={i}>
-                <strong>{c.usuario}</strong>: {c.texto}
-                <br />
-                <small>{new Date(c.data).toLocaleString()}</small>
+              <li key={i} className={styles.commentItem}>
+                <div className={styles.commentMeta}>
+                  <strong>{c.usuario || "Anônimo"}</strong>
+                  <small className={styles.commentDate}>
+                    {new Date(c.data).toLocaleString()}
+                  </small>
+                </div>
+                <p className={styles.commentText}>{c.texto}</p>
               </li>
             ))}
           </ul>
-        </>
-      )}
+        ) : (
+          <p className={styles.noComments}>Seja o primeiro a comentar.</p>
+        )}
+      </section>
 
-      {/* =====================================
-              MODAL DE COMENTÁRIO
-      ====================================== */}
+      {/* MODAL DE COMENTÁRIO */}
       {showCommentModal && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "rgba(0,0,0,0.5)"
-          }}
-        >
-          <div style={{
-            background: "#fff",
-            padding: 20,
-            borderRadius: 8,
-            width: 300
-          }}>
-            <h2>Novo Comentário</h2>
-
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalBox}>
+            <h3>Novo Comentário</h3>
             <textarea
-              rows={3}
+              className={styles.modalTextarea}
               value={novoComentario}
-              onChange={e => setNovoComentario(e.target.value)}
-              style={{ width: "100%", marginBottom: 10 }}
+              onChange={(e) => setNovoComentario(e.target.value)}
             />
-
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
-              <button onClick={salvarComentario}>Enviar</button>
-              <button onClick={() => setShowCommentModal(false)}>Cancelar</button>
+            <div className={styles.modalActions}>
+              <button className={styles.modalBtn} onClick={salvarComentario}>
+                Enviar
+              </button>
+              <button
+                className={`${styles.modalBtn} ${styles.cancelBtn}`}
+                onClick={() => setShowCommentModal(false)}
+              >
+                Cancelar
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* =====================================
-              MODAL DE EDIÇÃO
-      ====================================== */}
+      {/* MODAL DE EDIÇÃO */}
       {showEditModal && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            background: "rgba(0,0,0,0.6)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-          <div style={{ background: "#fff", padding: 20, width: 350, borderRadius: 8 }}>
-            <h2>Editar Álbum</h2>
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalBox}>
+            <h3>Editar Álbum</h3>
 
-            <label>Nome</label>
             <input
-              type="text"
+              className={styles.modalInput}
               value={editNome}
               onChange={(e) => setEditNome(e.target.value)}
-              style={{ width: "100%", marginBottom: 10 }}
             />
 
-            <label>Lore (opcional)</label>
             <textarea
+              className={styles.modalTextarea}
               value={editLore}
               onChange={(e) => setEditLore(e.target.value)}
-              style={{ width: "100%", marginBottom: 10 }}
             />
 
-            <label>Ano de lançamento</label>
             <input
+              className={styles.modalInput}
               type="number"
               value={editAno}
               onChange={(e) => setEditAno(e.target.value)}
-              style={{ width: "100%", marginBottom: 10 }}
             />
 
-            <label>Banda</label>
             <select
+              className={styles.modalInput}
               value={editBandaId}
               onChange={(e) => setEditBandaId(e.target.value)}
-              style={{ width: "100%", marginBottom: 10 }}
             >
               <option value="">Selecione...</option>
-              {bandas.map(b => (
+              {bandas.map((b) => (
                 <option key={b.id} value={b.id}>
                   {b.nome}
                 </option>
               ))}
             </select>
 
-            <button onClick={salvarEdicao} style={{ marginRight: 10 }}>
-              Salvar
-            </button>
-
-            <button onClick={() => setShowEditModal(false)}>
-              Cancelar
-            </button>
+            <div className={styles.modalActions}>
+              <button className={styles.modalBtn} onClick={salvarEdicao}>
+                Salvar
+              </button>
+              <button
+                className={`${styles.modalBtn} ${styles.cancelBtn}`}
+                onClick={() => setShowEditModal(false)}
+              >
+                Cancelar
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -2,6 +2,8 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import api from "../api";
 import { favoritar, desfavoritar } from "../services/favoritoApi";
+import useSpotifyImage from "../hooks/useSpotifyImage";
+import styles from "./DetalheMusica.module.css";
 
 export default function DetalheMusica() {
   const { id } = useParams();
@@ -11,20 +13,22 @@ export default function DetalheMusica() {
   const [isFav, setIsFav] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Dados para edição
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editNome, setEditNome] = useState("");
-  const [editLore, setEditLore] = useState("");
-
   const [bandas, setBandas] = useState([]);
   const [albuns, setAlbuns] = useState([]);
 
+  // EDIÇÃO
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editNome, setEditNome] = useState("");
+  const [editLore, setEditLore] = useState("");
   const [editBandaId, setEditBandaId] = useState("");
   const [editAlbumId, setEditAlbumId] = useState("");
 
-  // ==== COMENTÁRIO ====
+  // COMENTÁRIO
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [novoComentario, setNovoComentario] = useState("");
+
+  // SPOTIFY: imagem da banda
+  const bandaImage = useSpotifyImage("artist", musica?.bandaNome);
 
   useEffect(() => {
     carregarMusica();
@@ -33,96 +37,76 @@ export default function DetalheMusica() {
   }, [id]);
 
   async function carregarMusica() {
+    setLoading(true);
     try {
       const data = await api(`http://localhost:8080/musicas/${id}`);
       setMusica(data);
-      setLoading(false);
     } catch (err) {
       console.error("Erro ao carregar música:", err);
+    } finally {
+      setLoading(false);
     }
   }
 
   async function carregarFavoritos() {
     try {
       const favs = await api("http://localhost:8080/favoritos");
-      const favorito = favs.musicas?.some(m => m.id === Number(id));
-      setIsFav(!!favorito);
+      setIsFav(favs.musicas?.some((m) => m.id === Number(id)) ?? false);
     } catch (err) {
-      console.error("Erro ao verificar favorito:", err);
+      console.error("Erro verificar favorito:", err);
     }
   }
 
   async function carregarBandas() {
     try {
-      const listaBandas = await api("http://localhost:8080/bands");
-      setBandas(listaBandas);
+      const lista = await api("http://localhost:8080/bands");
+      setBandas(lista);
     } catch (err) {
-      console.error("Erro ao carregar bandas:", err);
+      console.error(err);
     }
   }
 
   async function carregarAlbunsDaBanda(bandaId) {
-  try {
-    const listaAlbuns = await api(`http://localhost:8080/albuns/banda/${bandaId}`);
-
-    // força virar array
-      if (Array.isArray(listaAlbuns)) {
-        setAlbuns(listaAlbuns);
-      } else if (!listaAlbuns) {
-        setAlbuns([]);
-      } else {
-        // se vier objeto único, transforma em array
-        setAlbuns([listaAlbuns]);
-      }
-
-    } catch (err) {
-      console.error("Erro ao carregar álbuns:", err);
+    try {
+      const lista = await api(`http://localhost:8080/albuns/banda/${bandaId}`);
+      setAlbuns(Array.isArray(lista) ? lista : lista ? [lista] : []);
+    } catch {
       setAlbuns([]);
     }
   }
 
-
   async function toggleFavorito() {
     try {
-      if (isFav) {
-        await desfavoritar("musicas", id);
-        setIsFav(false);
-      } else {
-        await favoritar("musicas", id);
-        setIsFav(true);
-      }
+      if (isFav) await desfavoritar("musicas", id);
+      else await favoritar("musicas", id);
+      setIsFav(!isFav);
     } catch (err) {
-      console.error("Erro ao alterar favorito:", err);
+      console.error(err);
     }
   }
 
-  // ======= MODAL DE EDIÇÃO =======
+  // EDIÇÃO
   const abrirModalEdicao = async () => {
     setEditNome(musica.nome);
     setEditLore(musica.lore || "");
-
     setEditBandaId(musica.bandaID);
     await carregarAlbunsDaBanda(musica.bandaID);
-
     setEditAlbumId(musica.albumID);
-
     setShowEditModal(true);
   };
 
   const salvarEdicao = async () => {
     if (!editNome.trim()) return;
-
     try {
       await api(`http://localhost:8080/musicas/${id}`, {
         method: "PUT",
         body: JSON.stringify({
           nome: editNome,
-          lore: editLore,
+          lore: editLore || null,
           banda: { id: Number(editBandaId) },
-          album: { id: Number(editAlbumId) }
+          album: { id: Number(editAlbumId) },
         }),
       });
-
       await carregarMusica();
       setShowEditModal(false);
     } catch (err) {
@@ -130,10 +114,9 @@ export default function DetalheMusica() {
     }
   };
 
-  // ======= DELETAR =======
+  // DELETE
   const deletarMusica = async () => {
     if (!window.confirm("Deseja realmente excluir esta música?")) return;
-
     try {
       await api(`http://localhost:8080/musicas/${id}`, { method: "DELETE" });
       navigate("/musicas");
@@ -142,7 +125,7 @@ export default function DetalheMusica() {
     }
   };
 
-  // ======= COMENTÁRIO =======
+  // COMENTÁRIO
   const abrirModalComentario = () => {
     setNovoComentario("");
     setShowCommentModal(true);
@@ -150,191 +133,129 @@ export default function DetalheMusica() {
 
   const salvarComentario = async () => {
     if (!novoComentario.trim()) return;
-
     try {
       await api(`http://localhost:8080/comments/musicas/${id}`, {
         method: "POST",
         body: JSON.stringify({ texto: novoComentario }),
       });
-
       await carregarMusica();
       setShowCommentModal(false);
     } catch (err) {
-      console.error("Erro ao criar comentário:", err);
+      console.error(err);
     }
   };
 
-  // ==========================
-  //   RENDER
-  // ==========================
-
-  if (loading) return <p>Carregando...</p>;
-  if (!musica) return <p>Música não encontrada.</p>;
+  if (loading) return <p className={styles.loading}>Carregando...</p>;
+  if (!musica) return <p className={styles.loading}>Música não encontrada.</p>;
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>
-        {musica.nome}
-        <button
-          onClick={toggleFavorito}
-          style={{
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            fontSize: 32,
-            marginLeft: 10,
-          }}
-        >
-          {isFav ? "❤️" : "🤍"}
-        </button>
-      </h1>
+    <div className={styles.container}>
+      {/* TOP: imagem + título + favoritos + ações */}
+      <div className={styles.top}>
+        {bandaImage ? (
+          <img src={bandaImage} alt={musica.bandaNome} className={styles.albumCover} />
+        ) : (
+          <div className={styles.albumCoverPlaceholder}>🎵</div>
+        )}
 
-      <p><strong>Descrição:</strong> {musica.lore}</p>
+        <div className={styles.titleBlock}>
+          <h1 className={styles.title}>{musica.nome}</h1>
 
-      <p>
-        <strong>Banda:</strong>{" "}
-        <Link to={`/bands/${musica.bandaID}`}>{musica.bandaNome}</Link>
-      </p>
+          <div className={styles.metaRow}>
+            <Link to={`/bands/${musica.bandaID}`} className={styles.bandLink}>
+              {musica.bandaNome}
+            </Link>
+            <span className={styles.year}>{musica.albumNome || "—"}</span>
+          </div>
 
-      <p>
-        <strong>Álbum:</strong>{" "}
-        <Link to={`/albuns/${musica.albumID}`}>{musica.albumNome}</Link>
-      </p>
-
-      <div style={{ marginTop: 20 }}>
-        <button onClick={abrirModalEdicao} style={{ marginRight: 10 }}>
-          Editar Música
-        </button>
-
-        <button
-          onClick={deletarMusica}
-          style={{ background: "red", color: "white" }}
-        >
-          Deletar Música
-        </button>
-        <button onClick={abrirModalComentario} style={{ marginLeft: 10 }}>
-          Adicionar Comentário
-        </button>
+          <div className={styles.actionsRow}>
+            <button className={styles.favoriteBtn} onClick={toggleFavorito}>
+              {isFav ? "❤️" : "🤍"}
+            </button>
+            <button className={styles.editBtn} onClick={abrirModalEdicao}>Editar</button>
+            <button className={styles.deleteBtn} onClick={deletarMusica}>Deletar</button>
+          </div>
+        </div>
       </div>
 
-      {/* ======= MODAL ======= */}
-      {showEditModal && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0, left: 0, right: 0, bottom: 0,
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <div style={{ backgroundColor: "#fff", padding: 20, borderRadius: 8, minWidth: 350 }}>
-            <h2>Editar Música</h2>
-
-            {/* Nome */}
-            <input
-              type="text"
-              value={editNome}
-              onChange={e => setEditNome(e.target.value)}
-              placeholder="Nome da música"
-              style={{ width: "100%", padding: 6, marginBottom: 10 }}
-            />
-
-            {/* Lore */}
-            <textarea
-              value={editLore}
-              onChange={e => setEditLore(e.target.value)}
-              placeholder="Lore (opcional)"
-              style={{ width: "100%", padding: 6, marginBottom: 10 }}
-            />
-
-            {/* Banda */}
-            <label>Banda:</label>
-            <select
-              value={editBandaId}
-              onChange={async (e) => {
-                const novaBanda = e.target.value;
-                setEditBandaId(novaBanda);
-
-                await carregarAlbunsDaBanda(novaBanda);
-                setEditAlbumId("");
-              }}
-              style={{ width: "100%", padding: 6, marginBottom: 10 }}
-            >
-              <option value="">Selecione...</option>
-              {bandas.map(b => (
-                <option key={b.id} value={b.id}>{b.nome}</option>
-              ))}
-            </select>
-
-            {/* Álbum */}
-            <label>Álbum:</label>
-            <select
-              value={editAlbumId}
-              onChange={e => setEditAlbumId(e.target.value)}
-              style={{ width: "100%", padding: 6, marginBottom: 10 }}
-            >
-              <option value="">Selecione...</option>
-              {albuns.map(a => (
-                <option key={a.id} value={a.id}>{a.nome}</option>
-              ))}
-            </select>
-
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
-              <button onClick={salvarEdicao}>Salvar</button>
-              <button onClick={() => setShowEditModal(false)}>Cancelar</button>
-            </div>
-          </div>
+      {/* DESCRIÇÃO */}
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>Descrição</h2>
+        <div className={styles.cardBox}>
+          <p className={styles.descriptionText}>{musica.lore || "Sem descrição disponível."}</p>
         </div>
-      )}
+      </section>
 
-      {/* ======= MODAL DE COMENTÁRIO ======= */}
-      {showCommentModal && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <div style={{ backgroundColor: "#fff", padding: 20, borderRadius: 8, minWidth: 300 }}>
-            <h2>Novo Comentário</h2>
-            <textarea
-              rows={3}
-              value={novoComentario}
-              onChange={(e) => setNovoComentario(e.target.value)}
-              placeholder="Escreva seu comentário..."
-              style={{ width: "100%", marginBottom: 10 }}
-            />
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
-              <button onClick={salvarComentario}>Enviar</button>
-              <button onClick={() => setShowCommentModal(false)}>Cancelar</button>
-            </div>
-          </div>
+      {/* COMENTÁRIOS */}
+      <section className={styles.section}>
+        <div className={styles.sectionHeader}>
+          <h2 className={styles.sectionTitle}>Comentários</h2>
+          <button className={styles.addCommentBtn} onClick={abrirModalComentario}>
+            + Comentar
+          </button>
         </div>
-      )}
 
-      {/* ======= COMENTÁRIOS ======= */}
-      {musica.comentarios?.length > 0 && (
-        <>
-          <h2 style={{ marginTop: 20 }}>Comentários</h2>
-          <ul>
+        {musica.comentarios?.length > 0 ? (
+          <ul className={styles.commentsList}>
             {musica.comentarios.map((c, i) => (
-              <li key={i}>
-                <strong>{c.usuario}</strong>: {c.texto}
-                <br />
-                <small>{new Date(c.data).toLocaleString()}</small>
+              <li key={i} className={styles.commentItem}>
+                <div className={styles.commentMeta}>
+                  <strong>{c.usuario || "Anônimo"}</strong>
+                  <small className={styles.commentDate}>
+                    {new Date(c.data).toLocaleString()}
+                  </small>
+                </div>
+                <p className={styles.commentText}>{c.texto}</p>
               </li>
             ))}
           </ul>
-        </>
+        ) : (
+          <p className={styles.noComments}>Seja o primeiro a comentar.</p>
+        )}
+      </section>
+
+      {/* MODAL DE COMENTÁRIO */}
+      {showCommentModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalBox}>
+            <h3>Novo Comentário</h3>
+            <textarea
+              className={styles.modalTextarea}
+              value={novoComentario}
+              onChange={(e) => setNovoComentario(e.target.value)}
+            />
+            <div className={styles.modalActions}>
+              <button className={styles.modalBtn} onClick={salvarComentario}>Enviar</button>
+              <button className={`${styles.modalBtn} ${styles.cancelBtn}`} onClick={() => setShowCommentModal(false)}>Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL DE EDIÇÃO */}
+      {showEditModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalBox}>
+            <h3>Editar Música</h3>
+            <input className={styles.modalInput} value={editNome} onChange={(e) => setEditNome(e.target.value)} />
+            <textarea className={styles.modalTextarea} value={editLore} onChange={(e) => setEditLore(e.target.value)} />
+
+            <select className={styles.modalInput} value={editBandaId} onChange={(e) => setEditBandaId(e.target.value)}>
+              <option value="">Selecione a banda...</option>
+              {bandas.map((b) => <option key={b.id} value={b.id}>{b.nome}</option>)}
+            </select>
+
+            <select className={styles.modalInput} value={editAlbumId} onChange={(e) => setEditAlbumId(e.target.value)}>
+              <option value="">Selecione o álbum...</option>
+              {albuns.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
+            </select>
+
+            <div className={styles.modalActions}>
+              <button className={styles.modalBtn} onClick={salvarEdicao}>Salvar</button>
+              <button className={`${styles.modalBtn} ${styles.cancelBtn}`} onClick={() => setShowEditModal(false)}>Cancelar</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

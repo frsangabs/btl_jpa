@@ -1,15 +1,33 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api";
+import useSpotifyImage from "../hooks/useSpotifyImage";
+import styles from "./Albuns.module.css";
+
+function AlbumCard({ album, isFav }) {
+  const image = useSpotifyImage("album", album.nome);
+
+  return (
+    <Link to={`/albuns/${album.id}`} className={styles.albumCard}>
+      <span className={styles.favHeart}>{isFav ? "❤️" : "🤍"}</span>
+
+      <img
+        src={image || "/placeholder.jpg"}
+        alt={album.nome}
+        className={styles.albumImg}
+      />
+
+      <h3 className={styles.albumTitle}>{album.nome}</h3>
+      <p className={styles.albumBand}>{album.bandaNome}</p>
+    </Link>
+  );
+}
 
 export default function Albuns() {
   const [albuns, setAlbuns] = useState([]);
   const [favoritas, setFavoritas] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ==============================
-  // Estados para criação de álbum
-  // ==============================
   const [showModal, setShowModal] = useState(false);
   const [albumNome, setAlbumNome] = useState("");
   const [albumLore, setAlbumLore] = useState("");
@@ -28,7 +46,6 @@ export default function Albuns() {
         setBandas(listaBandas);
 
         const favAlbuns = favs.albuns?.map(a => a.id) || [];
-
         setAlbuns(listaAlbuns);
         setFavoritas(favAlbuns);
         setLoading(false);
@@ -40,14 +57,8 @@ export default function Albuns() {
     carregar();
   }, []);
 
-  // ==============================
-  // Criar álbum
-  // ==============================
   const criarAlbum = async () => {
-    if (!albumNome.trim() || !albumBandaId) {
-      alert("Nome e Banda são obrigatórios!");
-      return;
-    }
+    if (!albumNome.trim() || !albumBandaId) return alert("Nome e Banda são obrigatórios!");
 
     try {
       const novo = await api("http://localhost:8080/albuns", {
@@ -56,7 +67,7 @@ export default function Albuns() {
           nome: albumNome,
           lore: albumLore || null,
           ano_lancamento: albumAno ? Number(albumAno) : 0,
-          bandaId: Number(albumBandaId)
+          bandaId: Number(albumBandaId),
         }),
       });
 
@@ -74,85 +85,74 @@ export default function Albuns() {
   if (loading) return <p>Carregando...</p>;
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Álbuns</h1>
+    <div className={styles.albunsContainer}>
 
-      {/* BOTÃO PARA ABRIR MODAL */}
-      <button
-        onClick={() => setShowModal(true)}
-        style={{ marginBottom: 20, padding: "8px 16px" }}
-      >
-        Adicionar Álbum
-      </button>
+      {/* HEADER */}
+      <div className={styles.albunsHeader}>
+        <h1>Álbuns</h1>
+
+        <button className={styles.btnAdd} onClick={() => setShowModal(true)}>
+          + Adicionar Álbum
+        </button>
+      </div>
+
+      {/* GRID */}
+      <div className={styles.albunsGrid}>
+        {albuns.map(album => (
+          <AlbumCard
+            key={album.id}
+            album={album}
+            isFav={favoritas.includes(album.id)}
+          />
+        ))}
+      </div>
 
       {/* MODAL */}
       {showModal && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0, left: 0, right: 0, bottom: 0,
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: "#fff",
-              padding: 20,
-              borderRadius: 8,
-              minWidth: 350
-            }}
-          >
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalBox}>
             <h2>Novo Álbum</h2>
 
             <input
-              type="text"
+              className={styles.modalInput}
               value={albumNome}
               onChange={e => setAlbumNome(e.target.value)}
               placeholder="Nome do álbum (obrigatório)"
-              style={{ width: "100%", padding: 6, marginBottom: 10 }}
             />
 
             <textarea
+              className={styles.modalTextarea}
               value={albumLore}
               onChange={e => setAlbumLore(e.target.value)}
               placeholder="Lore (opcional)"
-              rows={3}
-              style={{ width: "100%", padding: 6, marginBottom: 10 }}
             />
 
             <input
+              className={styles.modalInput}
               type="number"
               value={albumAno}
               onChange={e => setAlbumAno(e.target.value)}
               placeholder="Ano de lançamento (opcional)"
-              style={{ width: "100%", padding: 6, marginBottom: 10 }}
             />
 
-            {/* SELECT DE BANDAS */}
             <select
+              className={styles.modalSelect}
               value={albumBandaId}
               onChange={e => setAlbumBandaId(e.target.value)}
-              style={{ width: "100%", padding: 6, marginBottom: 10 }}
             >
               <option value="">Selecione a banda...</option>
-
               {bandas.map(b => (
-                <option key={b.id} value={b.id}>
-                  {b.nome}
-                </option>
+                <option key={b.id} value={b.id}>{b.nome}</option>
               ))}
             </select>
 
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
-              <button onClick={criarAlbum} style={{ padding: "6px 12px" }}>
+            <div className={styles.modalActions}>
+              <button className={styles.modalBtn} onClick={criarAlbum}>
                 Salvar
               </button>
               <button
+                className={`${styles.modalBtn} ${styles.cancel}`}
                 onClick={() => setShowModal(false)}
-                style={{ padding: "6px 12px" }}
               >
                 Cancelar
               </button>
@@ -160,23 +160,6 @@ export default function Albuns() {
           </div>
         </div>
       )}
-
-      {/* LISTA DE ÁLBUNS */}
-      <ul>
-        {albuns.map(a => {
-          const isFav = favoritas.includes(a.id);
-
-          return (
-            <li key={a.id} style={{ marginBottom: 8 }}>
-              <Link to={`/albuns/${a.id}`}>{a.nome}</Link>{" "}
-              — <Link to={`/bands/${a.bandaId}`}>{a.bandaNome}</Link>{" "}
-              <span style={{ fontSize: 20 }}>
-                {isFav ? "❤️" : "🤍"}
-              </span>
-            </li>
-          );
-        })}
-      </ul>
     </div>
   );
 }

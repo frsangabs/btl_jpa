@@ -1,0 +1,301 @@
+/* Container principal */
+.container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
+  color: #e0e0e0;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Loading / mensagens */
+.loading {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-top: 2rem;
+}
+
+/* Top: capa + título + ações */
+.top {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.albumCover {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.albumCoverPlaceholder {
+  width: 200px;
+  height: 200px;
+  border-radius: 12px;
+  background-color: #222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+}
+
+.titleBlock {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 2rem;
+  margin: 0;
+  font-weight: 700;
+}
+
+.metaRow {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.bandLink {
+  color: #00ff7f;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.bandLink:hover {
+  text-decoration: underline;
+}
+
+.year {
+  color: #aaa;
+}
+
+/* Ações: Favorito, Editar, Deletar */
+.actionsRow {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.favoriteBtn,
+.editBtn,
+.deleteBtn {
+  padding: 0.5rem 0.8rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.favoriteBtn {
+  background-color: #111;
+  color: #00ff7f;
+}
+
+.favoriteBtn:hover {
+  background-color: #00ff7f;
+  color: #111;
+}
+
+.editBtn {
+  background-color: #333;
+  color: #e0e0e0;
+}
+
+.editBtn:hover {
+  background-color: #00aa5a;
+  color: #fff;
+}
+
+.deleteBtn {
+  background-color: #550000;
+  color: #fff;
+}
+
+.deleteBtn:hover {
+  background-color: #ff0000;
+}
+
+/* Seções */
+.section {
+  margin-top: 2rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #00ff7f;
+  display: inline-block;
+  padding-bottom: 0.2rem;
+}
+
+/* Card de descrição */
+.cardBox {
+  background-color: #111;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.descriptionText {
+  margin: 0;
+}
+
+/* Lista de músicas */
+.trackList {
+  list-style: none;
+  padding: 0;
+}
+
+.trackItem {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #333;
+}
+
+.trackLink {
+  color: #00ff7f;
+  text-decoration: none;
+}
+
+.trackLink:hover {
+  text-decoration: underline;
+}
+
+/* Comentários */
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.addCommentBtn {
+  background-color: #00ff7f;
+  border: none;
+  padding: 0.3rem 0.7rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #111;
+  transition: all 0.2s;
+}
+
+.addCommentBtn:hover {
+  background-color: #00cc5a;
+}
+
+.commentsList {
+  list-style: none;
+  padding: 0;
+  margin-top: 1rem;
+}
+
+.commentItem {
+  background-color: #111;
+  padding: 0.8rem;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.5);
+}
+
+.commentMeta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.3rem;
+}
+
+.commentDate {
+  color: #aaa;
+  font-size: 0.8rem;
+}
+
+.commentText {
+  margin: 0;
+}
+
+.noComments {
+  margin-top: 0.5rem;
+  color: #888;
+}
+
+/* Player de áudio */
+.audioPlayer {
+  width: 100%;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Modais */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalBox {
+  background-color: #111;
+  padding: 1.5rem;
+  border-radius: 10px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.7);
+}
+
+.modalInput,
+.modalTextarea,
+select {
+  width: 100%;
+  margin-bottom: 0.8rem;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background-color: #222;
+  color: #e0e0e0;
+  font-size: 1rem;
+}
+
+.modalTextarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.modalBtn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  background-color: #00ff7f;
+  color: #111;
+  transition: all 0.2s;
+}
+
+.modalBtn:hover {
+  background-color: #00cc5a;
+}
+
+.cancelBtn {
+  background-color: #333;
+  color: #e0e0e0;
+}
+
+.cancelBtn:hover {
+  background-color: #555;
+}

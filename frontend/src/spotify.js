@@ -95,3 +95,17 @@ export async function searchTrackImage(name) {
 
   return data.tracks?.items?.[0]?.album?.images?.[0]?.url || null;
 }
+// Preview da música
+export async function searchTrackPreview(trackName, artistName) {
+  const token = await getSpotifyToken();
+  const query = encodeURIComponent(`${trackName} ${artistName}`);
+
+  const res = await fetch(
+    `https://api.spotify.com/v1/search?q=${query}&type=track&limit=1`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+
+  const data = await res.json();
+  return data.tracks?.items?.[0]?.preview_url || null;
+}
+

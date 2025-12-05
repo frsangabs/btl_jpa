@@ -1,0 +1,291 @@
+/* DetalheAlbum.module.css - estilo scoped (CSS Module) */
+
+.container {
+  width: 90%;
+  max-width: 1100px;
+  margin: auto;
+  padding: 28px 0;
+  color: var(--text-light);
+}
+
+/* TOP area */
+.top {
+  display: flex;
+  gap: 22px;
+  align-items: flex-start;
+  margin-bottom: 22px;
+}
+
+.albumCover {
+  width: 180px;
+  height: 180px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 2px solid #1db95433;
+  flex-shrink: 0;
+}
+
+.titleBlock {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.9rem;
+  text-align: left;
+}
+
+.metaRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  color: #bdbdbd;
+  font-size: 0.95rem;
+}
+
+.bandLink {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.year {
+  background: rgba(29,185,84,0.08);
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: #bfe9c9;
+  font-weight: 600;
+  border: 1px solid #1db95422;
+}
+
+/* actions on top */
+.actionsRow {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 8px;
+  margin-left: auto;
+}
+
+.favoriteBtn {
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+/* --- BOTÕES IGUAIS AOS DA PÁGINA DE BANDA --- */
+
+.editBtn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: transparent;
+  border: 2px solid #1db954;
+  color: #1db954;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.editBtn:hover {
+  background: rgba(29, 185, 84, 0.15);
+}
+
+.deleteBtn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: transparent;
+  border: 2px solid #b32b2b;
+  color: #b32b2b;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.deleteBtn:hover {
+  background: rgba(179, 43, 43, 0.15);
+}
+
+.commentBtn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  background: #1db954;
+  color: #000;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+/* sections */
+.section {
+  margin-bottom: 20px;
+}
+
+.sectionTitle {
+  text-align: center;
+  color: #1db954;
+  margin-bottom: 10px;
+  letter-spacing: 0.6px;
+}
+
+/* card-like box for description */
+.cardBox {
+  background: var(--bg-card);
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #1db95422;
+}
+
+.descriptionText {
+  margin: 0;
+  color: var(--text-light);
+}
+
+/* tracks */
+.trackList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.trackItem {
+  background: var(--bg-card);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.trackLink {
+  color: var(--text-light);
+  text-decoration: none;
+}
+
+/* comments */
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.addCommentBtn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  background: #1db954;
+  color: #000;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.commentsList {
+  list-style: none;
+  padding: 0;
+  margin-top: 12px;
+}
+
+.commentItem {
+  background: var(--bg-card);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #1db95422;
+}
+
+.commentMeta {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+  opacity: 0.95;
+}
+
+.commentDate {
+  color: #a9a9a9;
+  font-size: 0.85rem;
+}
+
+/* modals */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+}
+
+.modalBox {
+  background: var(--bg-card);
+  padding: 18px;
+  border-radius: 12px;
+  width: 420px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+}
+
+.modalInput,
+.modalTextarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-dark);
+  color: var(--text-light);
+  margin-bottom: 12px;
+}
+
+.modalTextarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.modalBtn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  background: #1db954;
+  color: #000;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.cancelBtn {
+  background: #444;
+  color: #fff;
+}
+
+/* misc */
+.loading {
+  text-align: center;
+  color: var(--text-light);
+}
+
+/* responsive */
+@media (max-width: 780px) {
+  .top {
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .title {
+    text-align: center;
+  }
+  .metaRow {
+    justify-content: center;
+  }
+  .actionsRow {
+    justify-content: center;
+  }
+}

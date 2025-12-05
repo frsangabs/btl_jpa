@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api";
+import styles from "./Musicas.module.css";
 
 export default function Musicas() {
   const [musicas, setMusicas] = useState([]);
   const [favoritas, setFavoritas] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ======= INSERIR MÚSICA =======
+  // ======= MODAL =======
   const [showAddModal, setShowAddModal] = useState(false);
   const [newNome, setNewNome] = useState("");
   const [newLore, setNewLore] = useState("");
@@ -33,7 +34,6 @@ export default function Musicas() {
     carregar();
   }, []);
 
-  // ======= SALVAR NOVA MÚSICA =======
   const salvarNovaMusica = async () => {
     if (!newNome.trim() || !newBandaNome.trim()) return;
 
@@ -44,7 +44,7 @@ export default function Musicas() {
           nome: newNome,
           lore: newLore || null,
           bandaNome: newBandaNome,
-          albumNome: newAlbumNome || null
+          albumNome: newAlbumNome || null,
         }),
       });
 
@@ -56,34 +56,42 @@ export default function Musicas() {
       setNewLore("");
       setNewBandaNome("");
       setNewAlbumNome("");
-
     } catch (err) {
       console.error("Erro ao criar música:", err);
     }
   };
 
-  if (loading) return <p>Carregando...</p>;
+  if (loading) return <p className={styles.loading}>Carregando...</p>;
 
   return (
-    <div>
-      <h1>Músicas</h1>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h1 className={styles.titulo}>Músicas</h1>
 
-      {/* BOTÃO DE INSERIR */}
-      <button onClick={() => setShowAddModal(true)}>
-        ➕ Inserir Música
-      </button>
+        <button className={styles.addButton} onClick={() => setShowAddModal(true)}>
+          ➕ Inserir Música
+        </button>
+      </div>
 
-      {/* LISTA */}
-      <ul>
+      <ul className={styles.lista}>
         {musicas.map(m => {
           const isFav = favoritas.includes(m.id);
 
           return (
-            <li key={m.id}>
-              <Link to={`/musicas/${m.id}`}>{m.nome}</Link>{" "}
-              —{" "}
-              <Link to={`/bands/${m.bandaID}`}>{m.bandaNome}</Link>{" "}
-              <span style={{ fontSize: 20 }}>
+            <li key={m.id} className={styles.faixaItem}>
+              <div className={styles.faixaContent}>
+                <Link to={`/musicas/${m.id}`} className={styles.musicaLink}>
+                  {m.nome}
+                </Link>
+
+                <span className={styles.separador}>—</span>
+
+                <Link to={`/bands/${m.bandaID}`} className={styles.bandaLink}>
+                  {m.bandaNome}
+                </Link>
+              </div>
+
+              <span className={styles.favorito}>
                 {isFav ? "❤️" : "🤍"}
               </span>
             </li>
@@ -91,57 +99,61 @@ export default function Musicas() {
         })}
       </ul>
 
-      {/* MODAL DE ADICIONAR */}
       {showAddModal && (
-        <div style={{
-          position: "fixed",
-          top: 0, left: 0, right: 0, bottom: 0,
-          background: "rgba(0,0,0,0.6)",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center"
-        }}>
-          <div style={{
-            background: "#fff",
-            padding: 20,
-            borderRadius: 8,
-            minWidth: 300
-          }}>
-            <h2>Adicionar Música</h2>
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalBox}>
+            <h2 className={styles.modalTitulo}>Adicionar Música</h2>
 
             <input
               type="text"
+              className={styles.modalInput}
               placeholder="Nome da música"
               value={newNome}
               onChange={e => setNewNome(e.target.value)}
-            /><br />
+            />
 
             <textarea
+              className={styles.modalTextarea}
               placeholder="Lore (opcional)"
               value={newLore}
               onChange={e => setNewLore(e.target.value)}
-            /><br />
+            />
 
             <input
               type="text"
+              className={styles.modalInput}
               placeholder="Nome da banda"
               value={newBandaNome}
               onChange={e => setNewBandaNome(e.target.value)}
-            /><br />
+            />
 
             <input
               type="text"
+              className={styles.modalInput}
               placeholder="Nome do álbum (opcional)"
               value={newAlbumNome}
               onChange={e => setNewAlbumNome(e.target.value)}
-            /><br /><br />
+            />
 
-            <button onClick={salvarNovaMusica}>Salvar</button>
-            <button onClick={() => setShowAddModal(false)}>Cancelar</button>
+            <div className={styles.modalActions}>
+              <button
+                className={`${styles.modalBtn} ${styles.salvar}`}
+                onClick={salvarNovaMusica}
+              >
+                Salvar
+              </button>
+
+              <button
+                className={`${styles.modalBtn} ${styles.cancelBtn}`}
+                onClick={() => setShowAddModal(false)}
+              >
+                Cancelar
+              </button>
+            </div>
+
           </div>
         </div>
       )}
-
     </div>
   );
 }
