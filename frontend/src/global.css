@@ -1,0 +1,81 @@
+/* RESET BÁSICO — deixa o site consistente em todos os navegadores */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* FONTES GERAIS */
+body {
+  font-family: 'Inter', Arial, sans-serif;
+  background-color: #0c0c0d;
+  color: #f1f1f1;
+  line-height: 1.6;
+}
+
+/* CORES DO TEMA (variáveis globais) */
+:root {
+  --primary: #8a2be2;   /* roxo moderno */
+  --secondary: #1db954; /* verde estilo Spotify */
+  --text-light: #f1f1f1;
+  --text-dark: #222;
+  --bg-dark: #0c0c0d;
+  --bg-card: #1a1a1d;
+  --bg-hover: #222226;
+  --border-color: #333;
+}
+
+/* TÍTULOS */
+h1, h2, h3, h4 {
+  font-weight: 700;
+  color: var(--text-light);
+}
+
+/* LINKS */
+a {
+  color: var(--secondary);
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+a:hover {
+  opacity: 0.8;
+}
+
+/* CONTAINERS GERAIS */
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* CARDS PADRÃO */
+.card {
+  background: var(--bg-card);
+  border-radius: 10px;
+  padding: 15px;
+  transition: 0.2s;
+}
+
+.card:hover {
+  background: var(--bg-hover);
+  transform: translateY(-3px);
+}
+
+/* LISTAS */
+ul {
+  list-style: none;
+}
+
+/* FAIXAS (ideal pra lista de músicas) */
+.faixa {
+  background: var(--bg-card);
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  transition: 0.2s;
+}
+
+.faixa:hover {
+  background: var(--bg-hover);
+}

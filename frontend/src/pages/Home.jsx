@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api";
+import styles from "./Home.module.css"; 
+import useSpotifyImage from "../hooks/useSpotifyImage";
 
 export default function Home() {
   const [data, setData] = useState(null);
@@ -8,72 +10,78 @@ export default function Home() {
 
   useEffect(() => {
     api("http://localhost:8080/home")
-      .then(res => {
+      .then((res) => {
         setData(res);
         setLoading(false);
       })
-      .catch(err => console.error("Erro ao carregar home:", err));
+      .catch((err) => console.error("Erro ao carregar home:", err));
   }, []);
+
+  const bandImg = useSpotifyImage("artist", data?.topBand?.nome);
+  const albumImg = useSpotifyImage("album", data?.topAlbum?.nome);
+  const musicImg = useSpotifyImage("track", data?.topMusic?.nome);
 
   if (loading) return <p>Carregando...</p>;
   if (!data) return <p>Erro ao carregar dados.</p>;
 
   return (
-    <div>
-      <h1>🏠 Página Inicial</h1>
+    <div className={styles.container}>
+      
+      <h1 className={styles.sectionTitle}>Mais quentes do momento</h1>
 
-      <section>
-        <h2>Mais Favoritados</h2>
-
-        {/* Banda */}
+      <div className={styles.hotCards}>
+        
         {data.topBand && (
-          <p>
-            <strong>Banda mais favoritada:</strong>{" "}
-            <Link to={`/bands/${data.topBand.id}`}>
-              {data.topBand.nome}
-            </Link>
-          </p>
+          <Link to={`/bands/${data.topBand.id}`} className={styles.card}>
+            <div
+              className={styles.cardImage}
+              style={{ backgroundImage: `url(${bandImg})` }}
+            ></div>
+            <p className={styles.cardTitle}>{data.topBand.nome}</p>
+            <span className={styles.cardTag}>Banda</span>
+          </Link>
         )}
 
-        {/* Álbum */}
         {data.topAlbum && (
-          <p>
-            <strong>Álbum mais favoritado:</strong>{" "}
-            <Link to={`/albuns/${data.topAlbum.id}`}>
-              {data.topAlbum.nome}
-            </Link>
-          </p>
+          <Link to={`/albuns/${data.topAlbum.id}`} className={styles.card}>
+            <div
+              className={styles.cardImage}
+              style={{ backgroundImage: `url(${albumImg})` }}
+            ></div>
+            <p className={styles.cardTitle}>{data.topAlbum.nome}</p>
+            <span className={styles.cardTag}>Álbum</span>
+          </Link>
         )}
 
-        {/* Música */}
         {data.topMusic && (
-          <p>
-            <strong>Música mais favoritada:</strong>{" "}
-            <Link to={`/musicas/${data.topMusic.id}`}>
-              {data.topMusic.nome}
-            </Link>
-          </p>
+          <Link to={`/musicas/${data.topMusic.id}`} className={styles.card}>
+            <div
+              className={styles.cardImage}
+              style={{ backgroundImage: `url(${musicImg})` }}
+            ></div>
+            <p className={styles.cardTitle}>{data.topMusic.nome}</p>
+            <span className={styles.cardTag}>Música</span>
+          </Link>
         )}
-      </section>
+      </div>
 
-      <hr />
+      <h2 className={styles.sectionTitle}>Últimas tracks adicionadas</h2>
 
-      <section>
-        <h2>🎵 Últimas músicas adicionadas</h2>
-
+      <ul className={styles.lastSongsList}>
         {data.latestSongs?.length > 0 ? (
-          <ul>
-            {data.latestSongs.map(m => (
-              <li key={m.id}>
-                <Link to={`/musicas/${m.id}`}>{m.nome}</Link> {" "}
-                <i>{m.banda?.nome}</i>
+          data.latestSongs.slice(0, 10).map((m) => (
+            <Link to={`/musicas/${m.id}`} className={styles.songLink}>
+              <li key={m.id} className={styles.songItem}>
+                {m.nome}
+                <span className={styles.songBand}>{m.banda?.nome}</span>
+                <span className={styles.songArrow}>➜</span>
               </li>
-            ))}
-          </ul>
+            </Link>
+          ))
         ) : (
           <p>Nenhuma música encontrada.</p>
         )}
-      </section>
+      </ul>
     </div>
   );
 }
