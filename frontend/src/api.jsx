@@ -1,6 +1,17 @@
 // api.jsx
 import { getToken, removeToken } from "./auth";
 
+async function parseResponseBody(response) {
+  const text = await response.text();
+  if (!text) return null;
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
+}
+
 export default async function api(url, options = {}) {
   const token = getToken();
 
@@ -9,9 +20,8 @@ export default async function api(url, options = {}) {
     ...(options.headers || {})
   };
 
-  // Se houver token, injeta automaticamente
   if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
+    headers.Authorization = `Bearer ${token}`;
   }
 
   const response = await fetch(url, {
@@ -19,18 +29,22 @@ export default async function api(url, options = {}) {
     headers
   });
 
-  // Se o token expirou → Spring Security retorna 401
   if (response.status === 401) {
-    removeToken();                 // remove token inválido
-    window.location.href = "/login"; // redireciona para login
+    removeToken();
+    window.location.href = "/login";
     throw new Error("Unauthorized");
   }
 
-  // Tenta retornar JSON, se não for JSON retorna texto
-  const text = await response.text();
-  try {
-    return JSON.parse(text);
-  } catch {
-    return text;
+  const payload = await parseResponseBody(response);
+
+  if (!response.ok) {
+    const message =
+      (typeof payload === "object" && payload?.message) ||
+      (typeof payload === "string" && payload) ||
+      `Erro HTTP ${response.status}`;
+
+    throw new Error(message);
   }
+
+  return payload;
 }

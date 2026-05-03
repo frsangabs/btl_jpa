@@ -1,8 +1,6 @@
 package com.spring.behindthelyrics.config;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,24 +20,23 @@ public class TokenService {
         this.secret = secret;
     }
 
-    public String generateToken(Usuario user){
-        try{
+    public String generateToken(Usuario user) {
+        try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
 
-            String token = JWT.create()
-            .withIssuer("auth-api")
-            .withSubject(user.getUsername())
-            .withClaim("role", user.getRole().name())
-            .withExpiresAt(genExpirationDate())
-            .sign(algorithm);
-            return token;
-        }catch(JWTCreationException exception){
+            return JWT.create()
+                .withIssuer("auth-api")
+                .withSubject(user.getUsername())
+                .withClaim("role", user.getRole().name())
+                .withExpiresAt(genExpirationDate())
+                .sign(algorithm);
+        } catch (JWTCreationException exception) {
             throw new RuntimeException("Erro ao gerar token", exception);
 
         }
     }
 
-    public String validateToken(String token){
+    public String validateToken(String token) {
 
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
@@ -48,14 +45,14 @@ public class TokenService {
                 .build()
                 .verify(token)
                 .getSubject();
-            
+
         } catch (JWTVerificationException exception) {
             return "";
         }
     }
 
-    private Instant genExpirationDate(){
-        return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+    private Instant genExpirationDate() {
+        return Instant.now().plusSeconds(2 * 60 * 60);
     }
 
 }

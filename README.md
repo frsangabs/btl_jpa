@@ -1,64 +1,95 @@
-🎵 Behind The Lyrics
+# 🎵 Behind The Lyrics
 
-Uma plataforma interativa para amantes da música explorarem bandas, álbuns e músicas, além de compartilhar comentários e favoritar seus conteúdos preferidos.
+Plataforma web para explorar **bandas, álbuns e músicas**, com autenticação via JWT e recursos de comentários e favoritos.
 
-📖 Sobre o Projeto
+## 📌 Status do projeto
 
-Behind The Lyrics é uma aplicação web desenvolvida com Spring Boot e conectada a um banco de dados PostgreSQL, que permite:
+Projeto em evolução com base funcional de backend + frontend:
 
-Cadastrar bandas, álbuns e músicas
+- ✅ Autenticação (`/auth/login`, `/auth/register`).
+- ✅ Rotas públicas de consulta para bandas, álbuns e músicas.
+- ✅ Controle de autorização por perfil (`ROLE_USER` e `ROLE_ADMIN`).
+- ✅ Estrutura de favoritos e comentários com persistência relacional.
+- ✅ Migrações de banco com Flyway.
 
-Exibir detalhes completos de cada entidade
+## 🧱 Stack
 
-Inserir comentários sobre músicas, álbuns e bandas
+### Backend
+- Java **21**
+- Spring Boot **3.5.x**
+- Spring Data JPA / Hibernate
+- Spring Security + JWT (`java-jwt`)
+- Flyway
+- PostgreSQL
 
-Favoritar conteúdos para acompanhar seus artistas preferidos
+### Frontend
+- React 19 (Create React App)
+- React Router
+- JavaScript + CSS
 
-Pesquisar bandas dinamicamente
+## 🗂️ Estrutura do repositório
 
-Exibir métricas, como as mais comentadas ou mais favoritadas
+```text
+.
+├── backend-spring/behindthelyrics   # API Spring Boot
+└── frontend                         # Aplicação React
+```
 
-🧱 Tecnologias Utilizadas
-Camada	          Tecnologia
-Backend	          Java 17+, Spring Boot, Spring Data JPA, Hibernate
-Frontend    	    React(Decorrer do projeto), HTML5, CSS3, JavaScript
-Banco de Dados	  PostgreSQL
-Gerenciamento    	Maven
-Lombok	          Reduz boilerplate (getters/setters/construtores)
+## 🚀 Como executar
 
-⚙️ Funcionalidades Principais (a implementar)
-🎸 Bandas
+## 1) Backend
 
-Cadastrar, listar e buscar bandas por nome (filtro dinâmico)
+### Pré-requisitos
+- Java 21
+- Maven (ou usar `./mvnw`)
+- PostgreSQL em execução
 
-Exibir detalhes com álbuns, músicas, comentários e favoritos
+### Variáveis / propriedades importantes
+A aplicação usa propriedades com fallback para desenvolvimento local. Configure por variável de ambiente ou por arquivo de propriedades:
 
-💿 Álbuns
+- `API_SECURITY_TOKEN_SECRET` (obrigatória em produção)
+- `APP_CORS_ALLOWED_ORIGINS` (opcional, padrão: `http://localhost:3000`)
+- `SPRING_DATASOURCE_URL`
+- `SPRING_DATASOURCE_USERNAME`
+- `SPRING_DATASOURCE_PASSWORD`
 
-Associados a bandas
+Exemplo de execução local:
 
-Listagem de músicas, comentários e ano de lançamento
+```bash
+cd backend-spring/behindthelyrics
+API_SECURITY_TOKEN_SECRET=minha-chave-local \
+SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/behindthelyrics \
+SPRING_DATASOURCE_USERNAME=postgres \
+SPRING_DATASOURCE_PASSWORD=postgres \
+./mvnw spring-boot:run
+```
 
-🎶 Músicas
+## 2) Frontend
 
-Ligadas a um álbum e banda
+```bash
+cd frontend
+npm install
+npm start
+```
 
-Exibição de comentários e favoritos
+A aplicação iniciará em `http://localhost:3000`.
 
-👤 Usuários
+## 🔐 Regras de acesso (resumo)
 
-Cadastro com username, email e senha
+- **Público**: login/registro e GETs de catálogo (`/bands/**`, `/albuns/**`, `/musicas/**`, `/search/**`, `/home`).
+- **ADMIN**: criação de bandas/álbuns/músicas (POST).
+- **USER e ADMIN**: gestão de favoritos.
+- **Autenticado**: endpoints de comentários.
 
-Associação com comentários e favoritos
+## 🛠️ Melhorias recentes
 
-💬 Comentários
+- Padronização de criptografia de senha com `PasswordEncoder` injetado.
+- Expiração de token baseada em UTC (`Instant.now()`), reduzindo inconsistências de timezone.
+- CORS configurável por propriedade (`app.cors.allowed-origins`).
+- Tratamento de erros HTTP no frontend para falhas não-401.
 
-Associados a bandas, álbuns ou músicas
+## 📈 Próximos passos sugeridos
 
-Permitem interação entre usuários
-
-⭐ Favoritos
-
-Permitem marcar conteúdos preferidos
-
-Futuramente: ranking de artistas mais favoritados
+- Ampliar cobertura de testes (service/controller).
+- Adicionar CI para lint e testes.
+- Publicar documentação de endpoints (OpenAPI/Swagger).
