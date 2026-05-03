@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,36 +23,39 @@ import jakarta.validation.Valid;
 @RequestMapping("auth")
 public class AuthenticationController {
 
-    @Autowired 
+    @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
     private UsuarioRepository repository;
     @Autowired
     private TokenService tokenService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid AuthenticationDTO data){
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid AuthenticationDTO data) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.username(), data.password());
-        var auth  = this.authenticationManager.authenticate(usernamePassword);
+        var auth = this.authenticationManager.authenticate(usernamePassword);
 
-        var token = tokenService.generateToken((Usuario)auth.getPrincipal());
+        var token = tokenService.generateToken((Usuario) auth.getPrincipal());
 
         return ResponseEntity.ok(new LoginResponseDTO(token));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody @Valid RegisterDTO data){
-        if(this.repository.findByUsername(data.username()) != null) return ResponseEntity.badRequest()
-        .body("Erro: usuário já existe!");
+    public ResponseEntity<String> register(@RequestBody @Valid RegisterDTO data) {
+        if (this.repository.findByUsername(data.username()) != null) {
+            return ResponseEntity.badRequest().body("Erro: usuário já existe!");
+        }
 
-        String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
+        String encryptedPassword = passwordEncoder.encode(data.password());
 
         Usuario newUser = new Usuario(data.username(), encryptedPassword, data.role());
 
         this.repository.save(newUser);
 
         return ResponseEntity.ok("Usuário cadastrado com sucesso.");
-        
+
     }
 
 }
